@@ -102,23 +102,29 @@
         <input type="hidden" name="cid" value="<?php if(isset($inodr['cid'])) echo $inodr['cid'];?>">
         <input type="hidden" name="add_next" value="0">
 
-        <?php if($act == "detail_add") { ?>
-            <button type="submit" class="btn btn-primary" onclick='javascript:$("input[name=add_next]").val(1);'>
-                <i class="icon-ok icon-white"></i> Save &amp; Next
-            </button>
-            <button type="submit" class="btn btn-info">
-                <i class="icon-ok icon-white"></i> Save
-            </button>
-            <button type="reset" class="btn btn-link">Cancel</button>
-        <?php } else if($act == "detail_edit") { ?>
-            <button type="submit" class="btn btn-info">
-                <i class="icon-ok icon-white"></i> Save
-            </button>
-            <button type="reset" class="btn btn-link">Cancel</button>
+        <?php if($this->session->userdata['user_auth'] > 0) { /* auth: operator, manager, admin  */ ?>
+            <?php if($act == "detail_add") { ?>
+                <button type="submit" class="btn btn-primary" onclick='javascript:$("input[name=add_next]").val(1);'>
+                    <i class="icon-ok icon-white"></i> Save &amp; Next
+                </button>
+                <button type="submit" class="btn btn-info">
+                    <i class="icon-ok icon-white"></i> Save
+                </button>
+                <button type="reset" class="btn btn-link">Cancel</button>
+            <?php } else if($act == "detail_edit") { ?>
+                <button type="submit" class="btn btn-info">
+                    <i class="icon-ok icon-white"></i> Save
+                </button>
+                <button type="reset" class="btn btn-link">Cancel</button>
+            <?php } else { ?>
+                <a href="inodr/add" class="btn btn-primary">
+                    <i class="icon-ok icon-white"></i> Create Next
+                </a>
+            <?php } ?>
         <?php } else { ?>
-            <a href="inodr/add" class="btn btn-primary">
-                <i class="icon-ok icon-white"></i> Create Next
-            </a>
+            <button type="button" class="btn btn-info" onclick="javascript:window.history.back();">
+                <i class="icon-share-alt icon-white"></i> Back
+            </button>
         <?php } ?>
 
         <?php if(($this->session->userdata['user_auth'] > 1) &&  /* auth:2 admin */

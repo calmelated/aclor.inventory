@@ -20,11 +20,13 @@
     </div>
 
     <div class="control-group">
-        <label class="control-label">Auth</label>
+        <label class="control-label">Authentication</label>
         <div class="controls">
             <select name="auth" class="input-medium">
-              <option value="0">Operator</option>
-              <option value="2">Admin</option>
+              <option value="0">Read Only</option>
+              <option value="1">Operator</option>
+              <option value="2">Manager</option>
+              <option value="3">Admin</option>
             </select>
             <?php echo '<div style="color:red">'.form_error('auth').'</div>';?>
         </div>

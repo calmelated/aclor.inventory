@@ -61,6 +61,10 @@ class Item extends CI_Controller {
     }
 
     public function add() {
+        if(!($this->session->userdata['user_auth'] > 0)) { // auth:1 operator
+            return redirect('noauth', 'refresh');
+        }
+
         if(empty($_POST)) {
             $this->show_page("detail_add", null);
         } else { // Posted !!
@@ -77,7 +81,7 @@ class Item extends CI_Controller {
     }
 
     public function edit($id) {
-        if(!($this->session->userdata['user_auth'] > 1)) { // auth:2 admin
+        if(!($this->session->userdata['user_auth'] > 1)) { // auth:2 manager, admin
             return redirect('noauth', 'refresh');
         }
 

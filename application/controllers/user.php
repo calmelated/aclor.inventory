@@ -10,16 +10,36 @@ class User extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
+
+        // Captcha parameters:
+        $captchaConfig = array(
+            'CaptchaId'   => 'FormCaptcha',   // a unique Id for the Captcha instance
+            'UserInputId' => 'CaptchaCode'    // Id of the Captcha code input textbox
+        );
+
+        // load the BotDetect Captcha library
+        $this->load->library('BotDetect/BotDetectCaptcha', $captchaConfig);
         $this->load->model('user_model', '', true);
     }
 
     public function index($formval = 'true') {
         if ($formval && $this->session->userdata('logged_in')) {
+            $this->botdetectcaptcha->Reset();
             redirect(site_url('order'), 'refresh');
         } else {
+            // the Captcha is not shown if the user already solved it but validation of
+            // other form fields failed
+            if (!$this->botdetectcaptcha->IsSolved) {
+                $data['captchaSolved'] = false;
+                $data['captchaHtml'] = $this->botdetectcaptcha->Html();
+            } else {
+                $data['captchaSolved'] = true;
+                $data['captchaHtml'] = '';
+            }
+
             //If no session, redirect to login page
             $this->load->view('header');
-            $this->load->view('login');
+            $this->load->view('login', $data);
             $this->load->view('footer');
         }
     }
@@ -28,6 +48,7 @@ class User extends CI_Controller {
         //This method will have the credentials validation
         $this->form_validation->set_rules('username', 'Username', 'trim|required|xss_clean');
         $this->form_validation->set_rules('password', 'Password', 'trim|required|xss_clean|callback_check_database');
+        $this->form_validation->set_rules('captcha' , 'Captcha' , 'callback_captcha_validate');
 
         if ($this->form_validation->run() == false) {
             $this->index(false);
@@ -74,7 +95,7 @@ class User extends CI_Controller {
     }
 
     public function add() {
-        if(!($this->session->userdata['user_auth'] > 1)) { // auth:2 admin
+        if(!($this->session->userdata['user_auth'] > 2)) { // auth:3 admin
             return redirect('noauth', 'refresh');
         }
 
@@ -97,7 +118,7 @@ class User extends CI_Controller {
     }
 
     public function remove($id) {
-        if(!($this->session->userdata['user_auth'] > 1)) { // auth:2 admin
+        if(!($this->session->userdata['user_auth'] > 2)) { // auth:3 admin
             return redirect('noauth', 'refresh');
         }
         $this->user_model->remove_users($id);
@@ -112,6 +133,22 @@ class User extends CI_Controller {
         } else {
             return true;
         }
+    }
+
+    // Captcha validation callback used in form validation
+    public function captcha_validate($code) {
+        // user considered human if they previously solved the Captcha...
+        $isHuman = $this->botdetectcaptcha->IsSolved;
+        if (!$isHuman) {
+            // ...or if they solved the current Captcha
+            $isHuman = $this->botdetectcaptcha->Validate($code);
+        }
+
+        // set error if Captcha validation failed
+        if (!$isHuman) {
+            $this->form_validation->set_message('captcha', 'Please retype the characters from the image correctly.');
+        }
+        return $isHuman;
     }
 }
 

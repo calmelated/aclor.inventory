@@ -190,8 +190,7 @@ class Order_model extends CI_Model {
 
     public function set_inodr_file($item_num, $qty, $unit) {
         // update for typeahead
-        $this->db->query("insert ignore into `units` (`name`) values ('" . $unit     . "');");
-        $this->db->query("insert ignore into `items` (`name`) values ('" . $item_num . "');");
+        $this->db->query("insert ignore into `items` (`name`, `unit`, `unit1`) values ('" . $this->input->post('item_num') . "', '" . $this->input->post('unit') . "', '" . $this->input->post('unit1') . "');");
 
         // insert record for order table
         $data = array(
@@ -227,9 +226,8 @@ class Order_model extends CI_Model {
     public function set_inodr($id) {
         if($id == null) { // new
             // update for typeahead
-            $this->db->query("insert ignore into `units`     (`name`) values ('" . $this->input->post('unit')     . "'),('" . $this->input->post('unit1')  . "');");
             $this->db->query("insert ignore into `companies` (`name`) values ('" . $this->input->post('owner')    . "'),('" . $this->input->post('vendor') . "');");
-            $this->db->query("insert ignore into `items`     (`name`) values ('" . $this->input->post('item_num') . "');");
+            $this->db->query("insert ignore into `items`     (`name`, `unit`, `unit1`) values ('" . $this->input->post('item_num') . "', '" . $this->input->post('unit') . "', '" . $this->input->post('unit1') . "');");
 
             // insert record for order table
             $data = array(
@@ -270,9 +268,8 @@ class Order_model extends CI_Model {
 
         } else { // edit
             // update for typeahead
-            $this->db->query("insert ignore into `units`     (`name`) values ('" . $this->input->post('unit')     . "'),('" . $this->input->post('unit1')  . "');");
             $this->db->query("insert ignore into `companies` (`name`) values ('" . $this->input->post('owner')    . "'),('" . $this->input->post('vendor') . "');");
-            $this->db->query("insert ignore into `items`     (`name`) values ('" . $this->input->post('item_num') . "');");
+            $this->db->query("insert ignore into `items`     (`name`, `unit`, `unit1`) values ('" . $this->input->post('item_num') . "', '" . $this->input->post('unit') . "', '" . $this->input->post('unit1') . "');");
 
             // update record for order table
             $data = array(
@@ -324,8 +321,7 @@ class Order_model extends CI_Model {
     public function set_adjodr($id) {
         if($id == null) { // new
             // update for typeahead
-            $this->db->query("insert ignore into `units` (`name`) values ('" . $this->input->post('unit')     . "'),('" . $this->input->post('unit1')  . "');");
-            $this->db->query("insert ignore into `items` (`name`) values ('" . $this->input->post('item_num') . "');");
+            $this->db->query("insert ignore into `items` (`name`, `unit`, `unit1`) values ('" . $this->input->post('item_num') . "', '" . $this->input->post('unit') . "', '" . $this->input->post('unit1') . "');");
 
             // insert record for order table
             $data = array(
@@ -364,8 +360,7 @@ class Order_model extends CI_Model {
 
         } else { // edit
             // update for typeahead
-            $this->db->query("insert ignore into `units` (`name`) values ('" . $this->input->post('unit')     . "'),('" . $this->input->post('unit1')  . "');");
-            $this->db->query("insert ignore into `items` (`name`) values ('" . $this->input->post('item_num') . "');");
+            $this->db->query("insert ignore into `items` (`name`, `unit`, `unit1`) values ('" . $this->input->post('item_num') . "', '" . $this->input->post('unit') . "', '" . $this->input->post('unit1') . "');");
 
             // update record for order table
             $data = array(

@@ -17,7 +17,9 @@
                         <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="inodr/add">Add Receipt</a></li>
+                        <?php if ($this->session->userdata['user_auth'] > 0) {  // auth:operator,manager,admin ?>
+                            <li><a href="inodr/add">Add Receipt</a></li>
+                        <?php } ?>
                         <li><a href="inodr">Receipt List</a></li>
                     </ul>
                 </li>
@@ -27,7 +29,9 @@
                         <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="outodr/add">Add Reqisition</a></li>
+                        <?php if ($this->session->userdata['user_auth'] > 0) {  // auth:operator,manager,admin ?>
+                            <li><a href="outodr/add">Add Reqisition</a></li>
+                        <?php } ?>
                         <li><a href="outodr">Reqisition List</a></li>
                     </ul>
                 </li>
@@ -37,18 +41,22 @@
                         <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="adjodr/add">Add Adjust</a></li>
+                        <?php if ($this->session->userdata['user_auth'] > 0) {  // auth:operator,manager,admin ?>
+                            <li><a href="adjodr/add">Add Adjust</a></li>
+                        <?php } ?>
                         <li><a href="adjodr">Adjust List</a></li>
                     </ul>
                 </li>
-                <?php if ($this->session->userdata['user_auth'] > 1) {  // auth:admin ?>
+                <?php if ($this->session->userdata['user_auth'] > 1) {  // auth:manager, admin ?>
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                             Admin
                             <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="user/ulist">Users</a></li>
+                            <?php if ($this->session->userdata['user_auth'] > 2) {  // auth:admin ?>
+                                <li><a href="user/ulist">Users</a></li>
+                            <?php } ?>
                             <li><a href="item">Item List</a></li>
                             <li><a href="comp">Companies</a></li>
                             <!-- li><a href="fileup/items">Imort Item List</a></li--!>

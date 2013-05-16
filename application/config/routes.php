@@ -78,8 +78,12 @@ $route['user/add']                                    = 'user/add';
 $route['user/remove/(:$any)']                         = 'user/remove/$1';
 $route['user/(:$any)']                                = 'user/$1';
 
+$route['botdetect/(:any)']                            = 'botdetect/$1';
+$route['botdetect']                                   = 'botdetect/sample';
+
 $route['fileup/(:$any)']                              = 'fileup/$1';
 $route['fileup']                                      = 'fileup';
+
 $route['default_controller']                          = 'user';
 $route['404_override']                                = '';
 

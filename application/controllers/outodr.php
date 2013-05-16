@@ -62,6 +62,10 @@ class Outodr extends CI_Controller {
     }
 
     public function add() {
+        if(!($this->session->userdata['user_auth'] > 0)) { // auth:1 operator
+            return redirect('noauth', 'refresh');
+        }
+
         if(empty($_POST)) {
             $this->show_page("detail_add", null, null, null, null);
         } else { // Posted !!

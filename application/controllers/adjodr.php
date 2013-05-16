@@ -29,7 +29,7 @@ class Adjodr extends CI_Controller {
     private function form_verify() {
         $this->form_validation->set_rules('adj_date' , 'Adjust Date' , 'required|xss_clean');
         $this->form_validation->set_rules('item_num' , 'Item #'      , 'required|max_length[16]|xss_clean');
-        $this->form_validation->set_rules('qty'      , 'Qty'         , 'required||numeric|xss_clean');
+        $this->form_validation->set_rules('qty'      , 'Qty'         , 'required|numeric|xss_clean');
         $this->form_validation->set_rules('unit'     , 'Unit'        , 'required|xss_clean');
         $this->form_validation->set_rules('qty1'     , 'Qty1'        , 'numeric|xss_clean');
         $this->form_validation->set_rules('unit1'    , 'Unit1'       , 'xss_clean');
@@ -86,7 +86,7 @@ class Adjodr extends CI_Controller {
             return redirect('noauth', 'refresh');
         }
 
-        $this->order_model->del_order("adjodr", $id);
+        $this->order_model->remove("adjodr", $id);
         redirect('adjodr', 'refresh');
     }
 

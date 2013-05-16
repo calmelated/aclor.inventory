@@ -135,6 +135,25 @@ class Order_model extends CI_Model {
         return $this->db->query($sql)->result_array();
     }
 
+    public function get_db_data($dbtable, $id) {
+        $sql = "select * from `" . $dbtable . "` ";
+        if($id != null) {
+            $sql = $sql . " where `id` = '" . $id . "'";
+        }
+        return $this->db->query($sql)->result_array();
+    }
+
+    public function set_db_data($dbtable, $id, $data) {
+        if($id == null) { // insert the same record for the items table
+            $this->db->insert($dbtable, $data);
+            return $this->db->insert_id();
+        } else {
+            $this->db->where('id', $id);
+            $this->db->update($dbtable, $data);
+        }
+        return $id;
+    }
+
     public function get_inout_order($dbtable, $act, $id, $item_num, $from, $to) {
         $date_fid  = "rcv_date";
         $item_num_ = "`item_num` = '" . $item_num . "' ";;
@@ -167,6 +186,42 @@ class Order_model extends CI_Model {
         }
         $sql = $sql . " order by `". $dbtable ."`.`id` desc ";
         return $this->db->query($sql)->result_array();
+    }
+
+    public function set_inodr_file($item_num, $qty, $unit) {
+        // update for typeahead
+        $this->db->query("insert ignore into `units` (`name`) values ('" . $unit     . "');");
+        $this->db->query("insert ignore into `items` (`name`) values ('" . $item_num . "');");
+
+        // insert record for order table
+        $data = array(
+            'date'      => '2013-04-01',
+            'item_num'  => $item_num,
+            'type'      => 0,
+            'qty'       => $qty,
+            'unit'      => $unit,
+        );
+        $this->db->insert(ORDERDB, $data);
+        $odr_id = $this->db->insert_id();
+
+        // insert the same record for the inodr table
+        $data = array(
+            'cid'       => $odr_id,
+            'modifier'  => $this->session->userdata['user_name'],
+            'rcv_date'  => '2013-04-01',
+            'owner'     => 'Aclor International Inc.',
+            'item_num'  => $item_num,
+            'qty'       => $qty,
+            'unit'      => $unit,
+        );
+        $this->db->insert(INODRDB, $data);
+        $inodr_id = $this->db->insert_id();
+
+        // insert cid for order table
+        $data = array('cid' => $inodr_id);
+        $this->db->where('id', $odr_id);
+        $this->db->update(ORDERDB, $data);
+        return $inodr_id;
     }
 
     public function set_inodr($id) {
@@ -250,12 +305,12 @@ class Order_model extends CI_Model {
         }
     }
 
-    public function del_order($dbtable, $id) {
+    public function remove($dbtable, $id) {
         // remove the record from order table
         $query = $this->db->get_where($dbtable, array('id' => $id))->result_array();
-        if($dbtable != OUTODRDB) {
+        if($dbtable == INODRDB || $dbtable == ADJODRDB) {
             $this->db->where('id', $query[0]['cid'])->delete(ORDERDB);
-        } else {
+        } else if($dbtable == OUTODRDB){
             foreach(unserialize($query[0]['cid']) as $cid) {
                 $this->db->where('id', $cid)->delete(ORDERDB);
             }
@@ -489,6 +544,10 @@ class Order_model extends CI_Model {
         $ret = "[";
         $units = $this->db->query("select * from `" . $table . "`")->result_array();
         foreach($units as $unit) {
+            if(empty($unit['name'])) {
+                continue;
+            }
+
             if($first == false) {
                 $ret = $ret . ",\"" . $unit['name'] . "\"";
             } else {
@@ -504,12 +563,11 @@ class Order_model extends CI_Model {
         while (!feof($handle)) {
             $line = fgets($handle);
             $cols = explode("\t", $line);
-            if(strlen($cols[0]) < 1 ||
-               strlen($cols[1]) < 1 ||
-               strlen($cols[2]) < 1 ||
-               $cols[3] == 'YES'    ||
-               $cols[3] == 'yes'    ||
-               $cols[0] == 'Item'     ) {
+            if(empty($cols[0]) ||
+               empty($cols[1]) ||
+               empty($cols[2]) ||
+               (!empty($cols[3]) && ($cols[3] == 'YES' || $cols[3] == 'yes')) ||
+               $cols[0] == 'Item' ) {
                 //print 'ignore -> <br>';
                 //var_dump($cols);
                 continue;
@@ -532,10 +590,13 @@ class Order_model extends CI_Model {
             }
 
             print 'Import Type: ' . $type . ', Itme: ' . $item . ', Desc: ' . $cols[1] . ', Number: ' . $num . '<br>';
+            /*
+            $this->set_inodr_file($itme, $num, 'unit');
             $this->db->insert("inodr", array(
                     "rcv_date" => "2013-05-01",
                     "item_num" => $item,
                     "qty"  => $num));
+             */
         }
         fclose($handle);
     }

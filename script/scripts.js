@@ -27,3 +27,32 @@ function form_validate(form) {
         });
     });
 }
+
+function input_typeahead(field, ahead_list) {
+    //console.log(ahead_list);
+    $(document).ready(function() {
+        var input = $("input[name='" + field + "']");
+        input.attr({'autocomplete': 'off'});
+        input.typeahead({
+            "source": ahead_list,
+            //match any item
+            matcher: function(item) {
+                if (this.query == '*') {
+                    return true;
+                } else {
+                    return item.indexOf(this.query) >= 0;
+                }
+            },
+            //avoid highlightning of "*"
+            highlighter: function(item) {
+                return "<div>" + item + "</div>"
+            }
+        });
+
+        input.focus(function(){
+            input.val('*');
+            input.typeahead('lookup');
+            input.val('');
+        });
+    });
+}

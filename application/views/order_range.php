@@ -28,6 +28,7 @@
 
 </form>
 
+<script src="script/scripts.js"></script>
 <script>
     $(document).ready(function() {
         $("input[name='from']").datepicker();
@@ -36,7 +37,8 @@
         $("input[name='to']").datepicker();
         $("input[name='to']").datepicker("option", "dateFormat", "yy-mm-dd");
 
-        var items = '<?=$items;?>';
-        $("input[name='item_num']").attr({'autocomplete': 'off', 'data-source': items});
+        var items = <?=$items;?>;
+        input_typeahead("item_num", items);
+
     });
 </script>

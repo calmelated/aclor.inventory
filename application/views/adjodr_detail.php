@@ -31,7 +31,7 @@
     <?php } ?>
 
     <div class="control-group">
-        <label class="control-label">Adjust Date</label>
+        <label class="control-label">Adjust Date<span class="star"> * </span></label>
         <div class="controls">
             <input type="text" name="adj_date" class="adjodr" placeholder="Format: 2013-01-01" value="<?php if(isset($adjodr['adj_date'])) echo $adjodr['adj_date'];?>">
             <?php echo '<div style="color:red">'.form_error('adj_date').'</div>';?>
@@ -39,7 +39,7 @@
     </div>
 
     <div class="control-group">
-        <label class="control-label">Item #</label>
+        <label class="control-label">Item #<span class="star"> * </span></label>
         <div class="controls">
             <input type="text" name="item_num" class="adjodr" value="<?php if(isset($adjodr['item_num'])) echo $adjodr['item_num']?>" data-provide="typeahead">
             <?php echo '<div style="color:red">'.form_error('item_num').'</div>';?>
@@ -47,7 +47,7 @@
     </div>
 
     <div class="control-group">
-        <label class="control-label">Qty</label>
+        <label class="control-label">Qty<span class="star"> * </span></label>
         <div class="controls">
             <input type="text" name="qty"  class="input-small adjodr" value="<?php if(isset($adjodr['qty']))  echo $adjodr['qty']?>">
             <input type="text" name="unit" class="input-small adjodr" value="<?php if(isset($adjodr['unit'])) echo $adjodr['unit']?>" placeholder="Unit" data-provide="typeahead">
@@ -68,7 +68,7 @@
     </div>
 
     <div class="control-group">
-        <label class="control-label">Reason</label>
+        <label class="control-label">Reason<span class="star"> * </span></label>
         <div class="controls">
             <input type="text" name="reason" class="adjodr" value="<?php if(isset($adjodr['reason'])) echo $adjodr['reason']?>" data-provide="typeahead">
             <?php echo '<div style="color:red">'.form_error('reason').'</div>';?>
@@ -76,7 +76,7 @@
     </div>
 
     <div class="control-group">
-        <label class="control-label">Approved By</label>
+        <label class="control-label">Approved By<span class="star"> * </span></label>
         <div class="controls">
             <input type="text" name="approved" class="adjodr" value="<?php if(isset($adjodr['approved'])) echo $adjodr['approved']?>">
             <?php echo '<div style="color:red">'.form_error('approved').'</div>';?>
@@ -135,43 +135,30 @@
             $("input[type=submit]").click(function(event){
                 return false;
             });
-        <?php } else if ($act == "detail_add") { ?>
-            // clear exist value
-            $("input[type='text']").each(function() {
-                $(".adjodr").attr({value:""});
-            });
-
+        <?php } else { ?>
             // set datepicker
             $("input[name='adj_date']").datepicker();
             $("input[name='adj_date']").datepicker( "option", "dateFormat", "yy-mm-dd");
             $("input[name='adj_date']").attr({'autocomplete': 'off'});
 
-            // set type ahead for some field
-            var items = '<?=$items;?>';
-            var units = '<?=$units;?>';
-
-            $("input[name='item_num']").attr({'autocomplete': 'off', 'data-source': items});
-            $("input[name='unit']").attr({'autocomplete': 'off', 'data-source': units});
-            $("input[name='unit1']").attr({'autocomplete': 'off', 'data-source': units});
-            $("input[name='reason']").attr({'autocomplete': 'off', 'data-source': '["surplus","loss","scrapped parts","order cancel"]'});
-
-            form_validate("#adjust_form");
-        <?php } else if ($act == "detail_edit") { ?>
-            // set datepicker, the init value need to be reset again.
-            $("input[name='adj_date']").datepicker();
-            $("input[name='adj_date']").datepicker("option", "dateFormat", "yy-mm-dd");
-            $("input[name='adj_date']").val("<?php if(isset($adjodr['adj_date'])) echo $adjodr['adj_date'];?>");
-            $("input[name='adj_date']").attr({'autocomplete': 'off'});
+            <?php if ($act == "detail_add") { ?>
+                // clear exist value
+                $("input[type='text']").each(function() {
+                    $(".adjodr").attr({value:""});
+                });
+            <?php } else if ($act == "detail_edit") { ?>
+                $("input[name='adj_date']").val("<?php if(isset($adjodr['adj_date'])) echo $adjodr['adj_date'];?>");
+            <?php } ?>
 
             // set type ahead for some field
-            var items = '<?=$items;?>';
-            var units = '<?=$units;?>';
-            var reasons = "['surplus', 'loss', 'scrapped parts', 'cancel the orders']";
+            var items = <?=$items;?>;
+            var units = <?=$units;?>;
+            var reasons = ["Surplus", "Loss", "Scrapped parts", "Order cancel"];
 
-            $("input[name='item_num']").attr({'autocomplete': 'off', 'data-source': items});
-            $("input[name='unit']").attr({'autocomplete': 'off', 'data-source': units});
-            $("input[name='unit1']").attr({'autocomplete': 'off', 'data-source': units});
-            $("input[name='reason']").attr({'autocomplete': 'off', 'data-source': '["surplus","loss","scrapped parts","order cancel"]'});
+            input_typeahead("item_num", items);
+            input_typeahead("unit", units);
+            input_typeahead("unit1", units);
+            input_typeahead("reason", reasons);
 
             form_validate("#adjust_form");
         <?php } ?>

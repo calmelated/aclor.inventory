@@ -48,7 +48,11 @@
                             <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="users">Users</a></li>
+                            <li><a href="user/ulist">Users</a></li>
+                            <li><a href="item">Item List</a></li>
+                            <li><a href="comp">Companies</a></li>
+                            <!-- li><a href="fileup/items">Imort Item List</a></li--!>
+                            <!-- li><a href="fileup">Upload Files</a></li--!>
                         </ul>
                     </li>
                 <?php } ?>

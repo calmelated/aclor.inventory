@@ -64,7 +64,20 @@ $route['order/time/(:$any)/(:$any)']                  = 'order/time/$1/$2';     
 $route['order/item_time/(:$any)/(:$any)/(:$any)']     = 'order/item_time/$1/$2/$3';      // order/item_time/$item/$from/$to
 $route['noauth']                                      = 'order/noauth';
 
+$route['item/add']                                    = 'item/add';
+$route['item/edit/(:$any)']                           = 'item/edit/$1';
+$route['item/remove/(:$any)']                         = 'item/remove/$1';
+$route['item/(:$any)']                                = 'item/$1';
+
+$route['comp/add']                                    = 'comp/add';
+$route['comp/edit/(:$any)']                           = 'comp/edit/$1';
+$route['comp/remove/(:$any)']                         = 'comp/remove/$1';
+$route['comp/(:$any)']                                = 'comp/$1';
+
+$route['user/add']                                    = 'user/add';
+$route['user/remove/(:$any)']                         = 'user/remove/$1';
 $route['user/(:$any)']                                = 'user/$1';
+
 $route['fileup/(:$any)']                              = 'fileup/$1';
 $route['fileup']                                      = 'fileup';
 $route['default_controller']                          = 'user';

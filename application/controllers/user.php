@@ -64,6 +64,55 @@ class User extends CI_Controller {
             return false;
         }
     }
+
+    public function ulist($page = "list") {
+        $data['users'] = $this->user_model->get_users(null);
+        $this->load->view('header'      ,$data);
+        $this->load->view('nav'         ,$data);
+        $this->load->view('user_'.$page ,$data);
+        $this->load->view('footer'      ,$data);
+    }
+
+    public function add() {
+        if(!($this->session->userdata['user_auth'] > 1)) { // auth:2 admin
+            return redirect('noauth', 'refresh');
+        }
+
+        if(!empty($_POST)) { // Posted !!
+            $this->form_validation->set_rules('username' , 'Username' , 'trim|required|min_length[3]|max_length[16]|xss_clean|callback_check_username');
+            $this->form_validation->set_rules('password' , 'Password' , 'trim|required|min_length[3]|max_length[16]|xss_clean');
+            $this->form_validation->set_rules('auth'     , 'Auth'     , 'trim|required|numeric|xss_clean');
+            if ($this->form_validation->run() == false) {
+                return $this->ulist("detail");
+            }
+
+            $this->user_model->set_users();
+            if($this->input->post('add_next') == 1) {
+                return redirect('user/add', 'refresh');
+            } else {
+                return $this->ulist("list");
+            }
+        }
+        return $this->ulist("detail");
+    }
+
+    public function remove($id) {
+        if(!($this->session->userdata['user_auth'] > 1)) { // auth:2 admin
+            return redirect('noauth', 'refresh');
+        }
+        $this->user_model->remove_users($id);
+        return $this->ulist("list");
+    }
+
+    public function check_username($username) {
+        $query = $this->db->select('username')->from(USERS)->where('username', $username)->get();
+        if ($query->num_rows() > 0) {
+            $this->form_validation->set_message('check_username', 'Duplicate Username !! ');
+            return false; // duplicate
+        } else {
+            return true;
+        }
+    }
 }
 
 /* End of file inventory.php */

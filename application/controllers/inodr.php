@@ -34,7 +34,7 @@ class Inodr extends CI_Controller {
         $this->form_validation->set_rules('item_num'  , 'Item #'          , 'required|max_length[16]|xss_clean');
         $this->form_validation->set_rules('import_num', 'Import #'        , 'max_length[16]|xss_clean');
         $this->form_validation->set_rules('po_num'    , 'PO #'            , 'required|max_length[16]|xss_clean');
-        $this->form_validation->set_rules('qty'       , 'Qty'             , 'required||numeric|xss_clean');
+        $this->form_validation->set_rules('qty'       , 'Qty'             , 'required|numeric|xss_clean');
         $this->form_validation->set_rules('unit'      , 'Unit'            , 'required|xss_clean');
         $this->form_validation->set_rules('qty1'      , 'Qty1'            , 'numeric|xss_clean');
         $this->form_validation->set_rules('unit1'     , 'Unit1'           , 'xss_clean');
@@ -89,7 +89,7 @@ class Inodr extends CI_Controller {
         if(!($this->session->userdata['user_auth'] > 1)) { // auth:2 admin
             return redirect('noauth', 'refresh');
         }
-        $this->order_model->del_order("inodr", $id);
+        $this->order_model->remove("inodr", $id);
         redirect('inodr', 'refresh');
     }
 

@@ -31,7 +31,7 @@
     <?php } ?>
 
     <div class="control-group">
-        <label class="control-label">Receive Date</label>
+        <label class="control-label">Receive Date<span class="star"> * </span></label>
         <div class="controls">
             <input type="text" name="rcv_date" class="inodr" placeholder="Format: 2013-01-01" value="<?php if(isset($inodr['rcv_date'])) echo $inodr['rcv_date'];?>">
             <?php echo '<div style="color:red">'.form_error('rcv_date').'</div>';?>
@@ -39,7 +39,7 @@
     </div>
 
     <div class="control-group">
-        <label class="control-label">Material Owner</label>
+        <label class="control-label">Material Owner<span class="star"> * </span></label>
         <div class="controls">
             <input type="text" name="owner" class="inodr" value="<?php if(isset($inodr['owner'])) echo $inodr['owner'];?>" data-provide="typeahead">
             <?php echo '<div style="color:red">'.form_error('owner').'</div>';?>
@@ -47,7 +47,7 @@
     </div>
 
     <div class="control-group">
-        <label class="control-label">Material Vendor</label>
+        <label class="control-label">Material Vendor<span class="star"> * </span></label>
         <div class="controls">
             <input type="text" name="vendor" class="inodr" value="<?php if(isset($inodr['vendor'])) echo $inodr['vendor'];?>" data-provide="typeahead">
             <?php echo '<div style="color:red">'.form_error('vendor').'</div>';?>
@@ -55,7 +55,7 @@
     </div>
 
     <div class="control-group">
-        <label class="control-label">Item #</label>
+        <label class="control-label">Item #<span class="star"> * </span></label>
         <div class="controls">
             <input type="text" name="item_num" class="inodr" value="<?php if(isset($inodr['item_num'])) echo $inodr['item_num']?>" data-provide="typeahead">
             <?php echo '<div style="color:red">'.form_error('item_num').'</div>';?>
@@ -71,7 +71,7 @@
     </div>
 
     <div class="control-group">
-        <label class="control-label">PO #</label>
+        <label class="control-label">PO #<span class="star"> * </span></label>
         <div class="controls">
             <input type="text" name="po_num" class="inodr" value="<?php if(isset($inodr['po_num'])) echo $inodr['po_num']?>">
             <?php echo '<div style="color:red">'.form_error('po_num').'</div>';?>
@@ -79,7 +79,7 @@
     </div>
 
     <div class="control-group">
-        <label class="control-label">Qty</label>
+        <label class="control-label">Qty<span class="star"> * </span></label>
         <div class="controls">
             <input type="text" name="qty"  class="input-small inodr" value="<?php if(isset($inodr['qty']))  echo $inodr['qty']?>">
             <input type="text" name="unit" class="input-small inodr" value="<?php if(isset($inodr['unit'])) echo $inodr['unit']?>" placeholder="Unit" data-provide="typeahead">
@@ -150,47 +150,33 @@
             $("input[type=submit]").click(function(event){
                 return false;
             });
-        <?php } else if ($act == "detail_add") { ?>
-            // clear exist value
-            $("input[type='text']").each(function() {
-                $(".inodr").attr({value:""});
-            });
-
-            // set datepicker
-            $("input[name='owner']").val("Aclor International Inc.");
+        <?php } else { ?>
             $("input[name='rcv_date']").datepicker();
             $("input[name='rcv_date']").datepicker( "option", "dateFormat", "yy-mm-dd");
 
-            // set type ahead for some field
-            var companies = '<?=$companies;?>';
-            var items = '<?=$items;?>';
-            var units = '<?=$units;?>';
+            <?php if ($act == "detail_add") { ?>
+                // clear exist value
+                $("input[type='text']").each(function() {
+                    $(".inodr").attr({value:""});
+                });
 
-            $("input[name='rcv_date']").attr({'autocomplete': 'off'});
-            $("input[name='owner']").attr({'autocomplete': 'off', 'data-source': companies});
-            $("input[name='vendor']").attr({'autocomplete': 'off', 'data-source': companies});
-            $("input[name='item_num']").attr({'autocomplete': 'off', 'data-source': items});
-            $("input[name='unit']").attr({'autocomplete': 'off', 'data-source': units});
-            $("input[name='unit1']").attr({'autocomplete': 'off', 'data-source': units});
-
-            form_validate("#receipt_form");
-        <?php } else if ($act == "detail_edit") { ?>
-            // set datepicker, the init value need to be reset again.
-            $("input[name='rcv_date']").datepicker();
-            $("input[name='rcv_date']").datepicker("option", "dateFormat", "yy-mm-dd");
-            $("input[name='rcv_date']").val("<?php if(isset($inodr['rcv_date'])) echo $inodr['rcv_date'];?>");
+                // set datepicker
+                $("input[name='owner']").val("Aclor International Inc.");
+            <?php } else if ($act == "detail_edit") { ?>
+                $("input[name='rcv_date']").val("<?php if(isset($inodr['rcv_date'])) echo $inodr['rcv_date'];?>");
+            <?php } ?>
 
             // set type ahead for some field
-            var companies = '<?=$companies;?>';
-            var items = '<?=$items;?>';
-            var units = '<?=$units;?>';
+            var companies = <?=$companies;?>;
+            var items = <?=$items;?>;
+            var units = <?=$units;?>;
 
             $("input[name='rcv_date']").attr({'autocomplete': 'off'});
-            $("input[name='owner']").attr({'autocomplete': 'off', 'data-source': companies});
-            $("input[name='vendor']").attr({'autocomplete': 'off', 'data-source': companies});
-            $("input[name='item_num']").attr({'autocomplete': 'off', 'data-source': items});
-            $("input[name='unit']").attr({'autocomplete': 'off', 'data-source': units});
-            $("input[name='unit1']").attr({'autocomplete': 'off', 'data-source': units});
+            input_typeahead("owner", companies);
+            input_typeahead("vendor", companies);
+            input_typeahead("item_num", items);
+            input_typeahead("unit", units);
+            input_typeahead("unit1", units);
 
             form_validate("#receipt_form");
         <?php } ?>

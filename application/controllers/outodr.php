@@ -102,7 +102,7 @@ class Outodr extends CI_Controller {
         if(!($this->session->userdata['user_auth'] > 1)) { // auth:2 admin
             return redirect('noauth', 'refresh');
         }
-        $this->order_model->del_order("outodr", $id);
+        $this->order_model->remove("outodr", $id);
         redirect('outodr', 'refresh');
     }
 

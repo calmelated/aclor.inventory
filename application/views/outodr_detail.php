@@ -73,13 +73,13 @@
 
     <div class="control-group">
         <label class="control-label">Item #<span class="star"> * </span></label>
-        <?php for($i = 0; $i < MAX_ITEMS; $i = $i + 1) { ?>
+        <?php for($i = 0; $i < MAX_OUTODR; $i = $i + 1) { ?>
             <div class="controls">
                 <input type="text" name="item_num_<?=$i;?>" class="input-medium outodr" value="<?php if(!empty($item_num[$i])) echo $item_num[$i]?>" data-provide="typeahead">
-                <input type="text" name="qty_<?=$i;?>"      class="input-mini outodr"   value="<?php if(!empty($qty[$i]))   echo $qty[$i]?>"         >
-                <input type="text" name="unit_<?=$i;?>"     class="input-mini outodr"   value="<?php if(!empty($unit[$i]))  echo $unit[$i]?>"        data-provide="typeahead">
-                <input type="text" name="qty1_<?=$i;?>"     class="input-mini outodr"   value="<?php if(!empty($qty1[$i]))  echo $qty1[$i]?>"        >
-                <input type="text" name="unit1_<?=$i;?>"    class="input-mini outodr"   value="<?php if(!empty($unit1[$i])) echo $unit1[$i]?>"       data-provide="typeahead">
+                <input type="text" name="qty_<?=$i;?>"      class="input-mini outodr"   value="<?php if(!empty($qty[$i]))   echo $qty[$i]?>"  >
+                <input type="text" name="unit_<?=$i;?>"     class="input-mini outodr"   value="<?php if(!empty($unit[$i]))  echo $unit[$i]?>" >
+                <input type="text" name="qty1_<?=$i;?>"     class="input-mini outodr"   value="<?php if(!empty($qty1[$i]))  echo $qty1[$i]?>" >
+                <input type="text" name="unit1_<?=$i;?>"    class="input-mini outodr"   value="<?php if(!empty($unit1[$i])) echo $unit1[$i]?>">
                 <?php echo '<div style="color:red">'.form_error('item_num_' . $i).'</div>';?>
                 <?php echo '<div style="color:red">'.form_error('qty_'      . $i).'</div>';?>
                 <?php echo '<div style="color:red">'.form_error('unit_'     . $i).'</div>';?>
@@ -94,7 +94,7 @@
         <label class="control-label">Approved By<span class="star"> * </span></label>
         <div class="controls">
             <input type="text" name="prod_approved" class="outodr" value="<?php if(isset($outodr['prod_approved'])) echo $outodr['prod_approved'];?>" placeholder="Warehouse">
-            <input type="text" name="wh_approved"   class="outodr" value="<?php if(isset($outodr['wh_approved'])) echo $outodr['wh_approved'];?>"     placeholder="Production">
+            <input type="text" name="wh_approved"   class="outodr" value="<?php if(isset($outodr['wh_approved']))   echo $outodr['wh_approved'];?>"   placeholder="Production">
             <?php echo '<div style="color:red">'.form_error('prod_approved').'</div>';?>
             <?php echo '<div style="color:red">'.form_error('wh_approved').'</div>';?>
         </div>
@@ -147,12 +147,23 @@
 
             // set type ahead for some field
             var items = <?=$items;?>;
-            var units = <?=$units;?>;
-
-            <?php for($i = 0; $i < MAX_ITEMS; $i = $i + 1) { ?>
+            <?php for($i = 0; $i < MAX_OUTODR; $i = $i + 1) { ?>
                 input_typeahead('item_num_<?=$i;?>', items);
-                input_typeahead('unit_<?=$i;?>' , units);
-                input_typeahead('unit1_<?=$i;?>', units);
+
+                $("input[name='item_num_<?=$i;?>']").change(function () {
+                    $.ajax({
+                        type: "GET",
+                        url: 'item/getunit/' + $(this).val(),
+                        cache: false,
+                        data: '',
+                        success: function(data){
+                            rst = JSON.parse(data);
+                            $("input[name='unit_<?=$i;?>']").val(rst.unit);
+                            $("input[name='unit1_<?=$i;?>']").val(rst.unit1);
+                        }
+                    });
+
+                });
             <?php } ?>
 
             form_validate("#reqisition_form");

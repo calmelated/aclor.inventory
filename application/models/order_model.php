@@ -1,11 +1,16 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-define('ORDERDB'    , 'order');
-define('INODRDB'    , 'inodr');
-define('OUTODRDB'   , 'outodr');
-define('ADJODRDB'   , 'adjodr');
+define('ORDERDB',  'order');
+define('ADJODRDB', 'adjodr');
+define('INODRDB',  'inodr');
+define('OUTODRDB', 'outodr');
 
 class Order_model extends CI_Model {
+
+    public function __construct() {
+        parent::__construct();
+        $this->load->model('util_model');
+    }
 
     private function clear_tmepdb($db, $start, $end) {
         for($i = $start; $i <= $end ; $i = $i + 1) {
@@ -19,8 +24,12 @@ class Order_model extends CI_Model {
         $tempdb = rand(1000, getrandmax());
         $this->clear_tmepdb($tempdb, 1, 7);
 
+        $item_num = ($item_num != null) ? $this->util_model->str_escape($item_num) : null;
+        $from     = ($from     != null) ? $this->util_model->str_escape($from)     : null;
+        $to       = ($to       != null) ? $this->util_model->str_escape($to)       : null;
+
         if ($item_num != null && $from != null && $to != null)        {  // order item_num, from ~ to
-            $sql = "create temporary table `" . $tempdb . "1` engine=memory (select `item_num`, sum(`qty`) as init, max(`unit`) as unit, sum(`qty1`), max(`unit1`) as unit1 as init1 from `" . ORDERDB . "` ";
+            $sql = "create temporary table `" . $tempdb . "1` engine=memory (select `item_num`, sum(`qty`) as init, max(`unit`) as unit, sum(`qty1`) as init1,  max(`unit1`) as unit1 from `" . ORDERDB . "` ";
             $sql = $sql . "where `item_num` = ' " . $item_num . "' ";
             $sql = $sql . "and   `date` < ' " . $from . "' ";
             $sql = $sql . "group by `item_num`) ";
@@ -34,7 +43,7 @@ class Order_model extends CI_Model {
             $sql = $sql . "group by `item_num`)";
             $this->db->query($sql);
 
-            $sql = "create temporary table `" . $tempdb . "3` engine=memory (select `item_num`, sum(`qty`) as stockout, max(`unit`) as unit, sum(`qty1`), max(`unit1`) as unit1 as stockout1 from `" . ORDERDB . "` ";
+            $sql = "create temporary table `" . $tempdb . "3` engine=memory (select `item_num`, sum(`qty`) as stockout, max(`unit`) as unit, sum(`qty1`) as stockout1, max(`unit1`) as unit1 from `" . ORDERDB . "` ";
             $sql = $sql . "where `item_num` = '" . $item_num . "' ";
             $sql = $sql . "and   `type`  = '1'            ";
             $sql = $sql . "and   `date` >= '" . $from   . "' ";
@@ -190,7 +199,7 @@ class Order_model extends CI_Model {
 
     public function set_inodr_file($item_num, $qty, $unit) {
         // update for typeahead
-        $this->db->query("insert ignore into `items` (`name`, `unit`, `unit1`) values ('" . $this->input->post('item_num') . "', '" . $this->input->post('unit') . "', '" . $this->input->post('unit1') . "');");
+        $this->db->query("insert ignore into `items` (`name`, `unit`) values ('" . $item_num . "', '" . $unit . "');");
 
         // insert record for order table
         $data = array(
@@ -226,18 +235,18 @@ class Order_model extends CI_Model {
     public function set_inodr($id) {
         if($id == null) { // new
             // update for typeahead
-            $this->db->query("insert ignore into `companies` (`name`) values ('" . $this->input->post('owner')    . "'),('" . $this->input->post('vendor') . "');");
-            $this->db->query("insert ignore into `items`     (`name`, `unit`, `unit1`) values ('" . $this->input->post('item_num') . "', '" . $this->input->post('unit') . "', '" . $this->input->post('unit1') . "');");
+            $this->db->query("insert ignore into `companies` (`name`) values ('" . $this->util_model->input_escape('owner')    . "'),('" . $this->util_model->input_escape('vendor') . "');");
+            $this->db->query("insert ignore into `items`     (`name`, `unit`, `unit1`) values ('" . $this->util_model->input_escape('item_num') . "', '" . $this->util_model->input_escape('unit') . "', '" . $this->util_model->input_escape('unit1') . "');");
 
             // insert record for order table
             $data = array(
-                'date'      => $this->input->post('rcv_date'),
-                'item_num'  => $this->input->post('item_num'),
+                'date'      => $this->input->post('rcv_date', true),
+                'item_num'  => $this->input->post('item_num', true),
                 'type'      => 0,
-                'qty'       => $this->input->post('qty'),
-                'unit'      => $this->input->post('unit'),
-                'qty1'      => $this->input->post('qty1'),
-                'unit1'     => $this->input->post('unit1')
+                'qty'       => $this->input->post('qty', true),
+                'unit'      => $this->input->post('unit', true),
+                'qty1'      => $this->input->post('qty1', true),
+                'unit1'     => $this->input->post('unit1', true)
             );
             $this->db->insert(ORDERDB, $data);
             $odr_id = $this->db->insert_id();
@@ -246,16 +255,16 @@ class Order_model extends CI_Model {
             $data = array(
                 'cid'       => $odr_id,
                 'modifier'  => $this->session->userdata['user_name'],
-                'rcv_date'  => $this->input->post('rcv_date'),
-                'owner'     => $this->input->post('owner'),
-                'vendor'    => $this->input->post('vendor'),
-                'item_num'  => $this->input->post('item_num'),
-                'import_num'=> $this->input->post('import_num'),
-                'po_num'    => $this->input->post('po_num'),
-                'qty'       => $this->input->post('qty'),
-                'unit'      => $this->input->post('unit'),
-                'qty1'      => $this->input->post('qty1'),
-                'unit1'     => $this->input->post('unit1')
+                'rcv_date'  => $this->input->post('rcv_date', true),
+                'owner'     => $this->input->post('owner', true),
+                'vendor'    => $this->input->post('vendor', true),
+                'item_num'  => $this->input->post('item_num', true),
+                'import_num'=> $this->input->post('import_num', true),
+                'po_num'    => $this->input->post('po_num', true),
+                'qty'       => $this->input->post('qty', true),
+                'unit'      => $this->input->post('unit', true),
+                'qty1'      => $this->input->post('qty1', true),
+                'unit1'     => $this->input->post('unit1', true)
             );
             $this->db->insert(INODRDB, $data);
             $inodr_id = $this->db->insert_id();
@@ -268,34 +277,34 @@ class Order_model extends CI_Model {
 
         } else { // edit
             // update for typeahead
-            $this->db->query("insert ignore into `companies` (`name`) values ('" . $this->input->post('owner')    . "'),('" . $this->input->post('vendor') . "');");
-            $this->db->query("insert ignore into `items`     (`name`, `unit`, `unit1`) values ('" . $this->input->post('item_num') . "', '" . $this->input->post('unit') . "', '" . $this->input->post('unit1') . "');");
+            $this->db->query("insert ignore into `companies` (`name`) values ('" . $this->util_model->input_escape('owner')    . "'),('" . $this->util_model->input_escape('vendor') . "');");
+            $this->db->query("insert ignore into `items`     (`name`, `unit`, `unit1`) values ('" . $this->util_model->input_escape('item_num') . "', '" . $this->util_model->input_escape('unit') . "', '" . $this->util_model->input_escape('unit1') . "');");
 
             // update record for order table
             $data = array(
-                'date'      => $this->input->post('rcv_date'),
-                'item_num'  => $this->input->post('item_num'),
-                'qty'       => $this->input->post('qty'),
-                'unit'      => $this->input->post('unit'),
-                'qty1'      => $this->input->post('qty1'),
-                'unit1'     => $this->input->post('unit1')
+                'date'      => $this->input->post('rcv_date', true),
+                'item_num'  => $this->input->post('item_num', true),
+                'qty'       => $this->input->post('qty', true),
+                'unit'      => $this->input->post('unit', true),
+                'qty1'      => $this->input->post('qty1', true),
+                'unit1'     => $this->input->post('unit1', true)
             );
-            $this->db->where('id', $this->input->post('cid'));
+            $this->db->where('id', $this->input->post('cid', true));
             $this->db->update(ORDERDB, $data);
 
             // update record for inodr table
             $data = array(
                 'modifier'  => $this->session->userdata['user_name'],
-                'rcv_date'  => $this->input->post('rcv_date'),
-                'owner'     => $this->input->post('owner'),
-                'vendor'    => $this->input->post('vendor'),
-                'item_num'  => $this->input->post('item_num'),
-                'import_num'=> $this->input->post('import_num'),
-                'po_num'    => $this->input->post('po_num'),
-                'qty'       => $this->input->post('qty'),
-                'unit'      => $this->input->post('unit'),
-                'qty1'      => $this->input->post('qty1'),
-                'unit1'     => $this->input->post('unit1')
+                'rcv_date'  => $this->input->post('rcv_date', true),
+                'owner'     => $this->input->post('owner', true),
+                'vendor'    => $this->input->post('vendor', true),
+                'item_num'  => $this->input->post('item_num', true),
+                'import_num'=> $this->input->post('import_num', true),
+                'po_num'    => $this->input->post('po_num', true),
+                'qty'       => $this->input->post('qty', true),
+                'unit'      => $this->input->post('unit', true),
+                'qty1'      => $this->input->post('qty1', true),
+                'unit1'     => $this->input->post('unit1', true)
             );
             $this->db->where('id', $id);
             $this->db->update(INODRDB, $data);
@@ -321,17 +330,17 @@ class Order_model extends CI_Model {
     public function set_adjodr($id) {
         if($id == null) { // new
             // update for typeahead
-            $this->db->query("insert ignore into `items` (`name`, `unit`, `unit1`) values ('" . $this->input->post('item_num') . "', '" . $this->input->post('unit') . "', '" . $this->input->post('unit1') . "');");
+            $this->db->query("insert ignore into `items` (`name`, `unit`, `unit1`) values ('" . $this->util_model->input_escape('item_num') . "', '" . $this->util_model->input_escape('unit') . "', '" . $this->util_model->input_escape('unit1') . "');");
 
             // insert record for order table
             $data = array(
-                'date'      => $this->input->post('adj_date'),
-                'item_num'  => $this->input->post('item_num'),
+                'date'      => $this->input->post('adj_date', true),
+                'item_num'  => $this->input->post('item_num', true),
                 'type'      => 2,
-                'qty'       => $this->input->post('qty'),
-                'unit'      => $this->input->post('unit'),
-                'qty1'      => $this->input->post('qty1'),
-                'unit1'     => $this->input->post('unit1')
+                'qty'       => $this->input->post('qty', true),
+                'unit'      => $this->input->post('unit', true),
+                'qty1'      => $this->input->post('qty1', true),
+                'unit1'     => $this->input->post('unit1', true)
             );
             $this->db->insert(ORDERDB, $data);
             $odr_id = $this->db->insert_id();
@@ -340,14 +349,14 @@ class Order_model extends CI_Model {
             $data = array(
                 'cid'       => $odr_id,
                 'modifier'  => $this->session->userdata['user_name'],
-                'adj_date'  => $this->input->post('adj_date'),
-                'item_num'  => $this->input->post('item_num'),
-                'qty'       => $this->input->post('qty'),
-                'unit'      => $this->input->post('unit'),
-                'qty1'      => $this->input->post('qty1'),
-                'unit1'     => $this->input->post('unit1'),
-                'reason'    => $this->input->post('reason'),
-                'approved'  => $this->input->post('approved')
+                'adj_date'  => $this->input->post('adj_date', true),
+                'item_num'  => $this->input->post('item_num', true),
+                'qty'       => $this->input->post('qty', true),
+                'unit'      => $this->input->post('unit', true),
+                'qty1'      => $this->input->post('qty1', true),
+                'unit1'     => $this->input->post('unit1', true),
+                'reason'    => $this->input->post('reason', true),
+                'approved'  => $this->input->post('approved', true)
             );
             $this->db->insert(ADJODRDB, $data);
             $adjodr_id = $this->db->insert_id();
@@ -360,32 +369,32 @@ class Order_model extends CI_Model {
 
         } else { // edit
             // update for typeahead
-            $this->db->query("insert ignore into `items` (`name`, `unit`, `unit1`) values ('" . $this->input->post('item_num') . "', '" . $this->input->post('unit') . "', '" . $this->input->post('unit1') . "');");
+            $this->db->query("insert ignore into `items` (`name`, `unit`, `unit1`) values ('" . $this->util_model->input_escape('item_num') . "', '" . $this->util_model->input_escape('unit') . "', '" . $this->util_model->input_escape('unit1') . "');");
 
             // update record for order table
             $data = array(
-                'date'      => $this->input->post('adj_date'),
-                'item_num'  => $this->input->post('item_num'),
+                'date'      => $this->input->post('adj_date', true),
+                'item_num'  => $this->input->post('item_num', true),
                 'type'      => 2,
-                'qty'       => $this->input->post('qty'),
-                'unit'      => $this->input->post('unit'),
-                'qty1'      => $this->input->post('qty1'),
-                'unit1'     => $this->input->post('unit1')
+                'qty'       => $this->input->post('qty', true),
+                'unit'      => $this->input->post('unit', true),
+                'qty1'      => $this->input->post('qty1', true),
+                'unit1'     => $this->input->post('unit1', true)
             );
-            $this->db->where('id', $this->input->post('cid'));
+            $this->db->where('id', $this->input->post('cid', true));
             $this->db->update(ORDERDB, $data);
 
             // update record for inodr table
             $data = array(
                 'modifier'  => $this->session->userdata['user_name'],
-                'adj_date'  => $this->input->post('adj_date'),
-                'item_num'  => $this->input->post('item_num'),
-                'qty'       => $this->input->post('qty'),
-                'unit'      => $this->input->post('unit'),
-                'qty1'      => $this->input->post('qty1'),
-                'unit1'     => $this->input->post('unit1'),
-                'reason'    => $this->input->post('reason'),
-                'approved'  => $this->input->post('approved')
+                'adj_date'  => $this->input->post('adj_date', true),
+                'item_num'  => $this->input->post('item_num', true),
+                'qty'       => $this->input->post('qty', true),
+                'unit'      => $this->input->post('unit', true),
+                'qty1'      => $this->input->post('qty1', true),
+                'unit1'     => $this->input->post('unit1', true),
+                'reason'    => $this->input->post('reason', true),
+                'approved'  => $this->input->post('approved', true)
             );
             $this->db->where('id', $id);
             $this->db->update(ADJODRDB, $data);
@@ -401,9 +410,9 @@ class Order_model extends CI_Model {
         $unit1    = array();
 
         if($id == null) { // new
-            for($i = 0; $i < MAX_ITEMS; $i = $i + 1) {
-                $tmp_item = $this->input->post('item_num_' . $i);
-                $tmp_qty  = $this->input->post('qty_' . $i);
+            for($i = 0; $i < MAX_OUTODR; $i = $i + 1) {
+                $tmp_item = $this->input->post('item_num_' . $i, true);
+                $tmp_qty  = $this->input->post('qty_' . $i, true);
                 if(empty($tmp_item)) {
                     continue;
                 } else { // item # not empty
@@ -414,38 +423,38 @@ class Order_model extends CI_Model {
 
                 // insert record for order table
                 $data = array(
-                    'date'      => $this->input->post('req_date'),
-                    'item_num'  => $this->input->post('item_num_' . $i),
+                    'date'      => $this->input->post('req_date', true),
+                    'item_num'  => $this->input->post('item_num_' . $i, true),
                     'type'      => 1,
-                    'qty'       => $this->input->post('qty_'   . $i),
-                    'unit'      => $this->input->post('unit_'  . $i),
-                    'qty1'      => $this->input->post('qty1_'  . $i),
-                    'unit1'     => $this->input->post('unit1_' . $i)
+                    'qty'       => $this->input->post('qty_'   . $i, true),
+                    'unit'      => $this->input->post('unit_'  . $i, true),
+                    'qty1'      => $this->input->post('qty1_'  . $i, true),
+                    'unit1'     => $this->input->post('unit1_' . $i, true)
                 );
                 $this->db->insert(ORDERDB, $data);
                 array_push($odr_id,   $this->db->insert_id());
-                array_push($item_num, $this->input->post('item_num_' . $i));
-                array_push($qty,      $this->input->post('qty_'   . $i));
-                array_push($unit,     $this->input->post('unit_'  . $i));
-                array_push($qty1,     $this->input->post('qty1_'  . $i));
-                array_push($unit1,    $this->input->post('unit1_' . $i));
+                array_push($item_num, $this->input->post('item_num_' . $i, true));
+                array_push($qty,      $this->input->post('qty_'   . $i, true));
+                array_push($unit,     $this->input->post('unit_'  . $i, true));
+                array_push($qty1,     $this->input->post('qty1_'  . $i, true));
+                array_push($unit1,    $this->input->post('unit1_' . $i, true));
             }
 
             // insert the same record for the outodr table
             $data = array(
                 'cid'           => serialize($odr_id),
                 'modifier'      => $this->session->userdata['user_name'],
-                'req_date'      => $this->input->post('req_date'),
-                'wo_num'        => $this->input->post('wo_num'),
-                'raw_num'       => $this->input->post('raw_num'),
-                'fin_prod'      => $this->input->post('fin_prod'),
+                'req_date'      => $this->input->post('req_date', true),
+                'wo_num'        => $this->input->post('wo_num', true),
+                'raw_num'       => $this->input->post('raw_num', true),
+                'fin_prod'      => $this->input->post('fin_prod', true),
                 'item_num'      => serialize($item_num),
                 'qty'           => serialize($qty),
                 'unit'          => serialize($unit),
                 'qty1'          => serialize($qty1),
                 'unit1'         => serialize($unit1),
-                'prod_approved' => $this->input->post('prod_approved'),
-                'wh_approved'   => $this->input->post('wh_approved')
+                'prod_approved' => $this->input->post('prod_approved', true),
+                'wh_approved'   => $this->input->post('wh_approved', true)
             );
             $this->db->insert(OUTODRDB, $data);
             $outodr_id = $this->db->insert_id();
@@ -458,9 +467,9 @@ class Order_model extends CI_Model {
             }
             return $outodr_id;
         } else { // edit
-            for($i = 0; $i < MAX_ITEMS; $i = $i + 1) {
+            for($i = 0; $i < MAX_OUTODR; $i = $i + 1) {
                 // check the lasttime record
-                $last = $this->input->post('cid_' . $i);
+                $last = $this->input->post('cid_' . $i, true);
                 if(!empty($last)) { // still emtpy
                     $last = 1;
                 } else {
@@ -468,8 +477,8 @@ class Order_model extends CI_Model {
                 }
 
                 // identify the current record
-                $tmp_item = $this->input->post('item_num_' . $i);
-                $tmp_qty  = $this->input->post('qty_' . $i);
+                $tmp_item = $this->input->post('item_num_' . $i, true);
+                $tmp_qty  = $this->input->post('qty_' . $i, true);
                 $cur = 0;
                 if(empty($tmp_item)) {
                     $cur = 0;
@@ -481,22 +490,22 @@ class Order_model extends CI_Model {
 
                 // prepare record for order table
                 $data = array(
-                    'date'      => $this->input->post('req_date'),
-                    'item_num'  => $this->input->post('item_num_' . $i),
+                    'date'      => $this->input->post('req_date', true),
+                    'item_num'  => $this->input->post('item_num_' . $i, true),
                     'type'      => 1,
                     'cid'       => $id,
-                    'qty'       => $this->input->post('qty_'   . $i),
-                    'unit'      => $this->input->post('unit_'  . $i),
-                    'qty1'      => $this->input->post('qty1_'  . $i),
-                    'unit1'     => $this->input->post('unit1_' . $i)
+                    'qty'       => $this->input->post('qty_'   . $i, true),
+                    'unit'      => $this->input->post('unit_'  . $i, true),
+                    'qty1'      => $this->input->post('qty1_'  . $i, true),
+                    'unit1'     => $this->input->post('unit1_' . $i, true)
                 );
 
                 if($last == 1 && $cur == 1) {        // Update
-                    $this->db->where('id', $this->input->post('cid_' . $i));
+                    $this->db->where('id', $this->input->post('cid_' . $i, true));
                     $this->db->update(ORDERDB, $data);
-                    array_push($odr_id,   $this->input->post('cid_' . $i));
+                    array_push($odr_id,   $this->input->post('cid_' . $i, true));
                 } else if($last == 1 && $cur == 0) { // Remove
-                    $this->db->where('id', $this->input->post('cid_' . $i));
+                    $this->db->where('id', $this->input->post('cid_' . $i, true));
                     $this->db->delete(ORDERDB);
                     continue;
                 } else if($last == 0 && $cur == 1) { // Add
@@ -506,47 +515,58 @@ class Order_model extends CI_Model {
                     continue;
                 }
 
-                array_push($item_num, $this->input->post('item_num_' . $i));
-                array_push($qty,      $this->input->post('qty_'   . $i));
-                array_push($unit,     $this->input->post('unit_'  . $i));
-                array_push($qty1,     $this->input->post('qty1_'  . $i));
-                array_push($unit1,    $this->input->post('unit1_' . $i));
+                array_push($item_num, $this->input->post('item_num_' . $i, true));
+                array_push($qty,      $this->input->post('qty_'   . $i, true));
+                array_push($unit,     $this->input->post('unit_'  . $i, true));
+                array_push($qty1,     $this->input->post('qty1_'  . $i, true));
+                array_push($unit1,    $this->input->post('unit1_' . $i, true));
             }
 
             // insert the same record for the outodr table
             $data = array(
                 'cid'           => serialize($odr_id),
                 'modifier'      => $this->session->userdata['user_name'],
-                'req_date'      => $this->input->post('req_date'),
-                'wo_num'        => $this->input->post('wo_num'),
-                'raw_num'       => $this->input->post('raw_num'),
-                'fin_prod'      => $this->input->post('fin_prod'),
+                'req_date'      => $this->input->post('req_date', true),
+                'wo_num'        => $this->input->post('wo_num', true),
+                'raw_num'       => $this->input->post('raw_num', true),
+                'fin_prod'      => $this->input->post('fin_prod', true),
                 'item_num'      => serialize($item_num),
                 'qty'           => serialize($qty),
                 'unit'          => serialize($unit),
                 'qty1'          => serialize($qty1),
                 'unit1'         => serialize($unit1),
-                'prod_approved' => $this->input->post('prod_approved'),
-                'wh_approved'   => $this->input->post('wh_approved')
+                'prod_approved' => $this->input->post('prod_approved', true),
+                'wh_approved'   => $this->input->post('wh_approved', true)
             );
             $this->db->where('id', $id);
             $this->db->update(OUTODRDB, $data);
         }
     }
 
-    public function get_typeahead($table) {
+    public function getunit($item_num) {
+        $rsts = $this->db->query("select `unit`,`unit1` from `" . ITEMS . "` where `name` = '" . $item_num . "'")->result_array();
+        foreach($rsts as $rst) {
+            $data['unit']  = $rst['unit'];
+            $data['unit1'] = $rst['unit1'];
+            break;
+        }
+        return $data;
+    }
+
+    public function get_typeahead($table, $fid = '*') {
         $first = true;
         $ret = "[";
-        $units = $this->db->query("select * from `" . $table . "`")->result_array();
+        $units = $this->db->query("select " . $fid . " from `" . $table . "`")->result_array();
+        $fid = ($fid == '*') ? 'name' : $fid;
         foreach($units as $unit) {
-            if(empty($unit['name'])) {
+            if(empty($unit[$fid])) {
                 continue;
             }
 
             if($first == false) {
-                $ret = $ret . ",\"" . $unit['name'] . "\"";
+                $ret = $ret . ",\"" . $unit[$fid] . "\"";
             } else {
-                $ret = "[\"" . $unit['name'] . "\"";
+                $ret = "[\"" . $unit[$fid] . "\"";
                 $first = false;
             }
         }
@@ -585,8 +605,8 @@ class Order_model extends CI_Model {
             }
 
             print 'Import Type: ' . $type . ', Itme: ' . $item . ', Desc: ' . $cols[1] . ', Number: ' . $num . '<br>';
+            $this->set_inodr_file($item, $num, 'unit');
             /*
-            $this->set_inodr_file($itme, $num, 'unit');
             $this->db->insert("inodr", array(
                     "rcv_date" => "2013-05-01",
                     "item_num" => $item,

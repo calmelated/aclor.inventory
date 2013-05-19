@@ -9,7 +9,7 @@
     <div class="navbar-inner">
         <div class="container">
             <ul class="nav">
-                <li class="active nav brand"><img src="img/logo.png" height=60 width=60 /></li>
+                <li class="active nav brand"><img src="img/logo.png" style="margin: 0;max-width: 128px;max-height: 24px;"/></li>
                 <li><a href="order">Stock</a></li>
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
@@ -59,8 +59,6 @@
                             <?php } ?>
                             <li><a href="item">Item List</a></li>
                             <li><a href="comp">Companies</a></li>
-                            <!-- li><a href="fileup/items">Imort Item List</a></li--!>
-                            <!-- li><a href="fileup">Upload Files</a></li--!>
                         </ul>
                     </li>
                 <?php } ?>

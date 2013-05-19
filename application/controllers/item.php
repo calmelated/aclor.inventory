@@ -36,7 +36,8 @@ class Item extends CI_Controller {
     }
 
     public function check_item($item_num, $id) {
-        $sql = "select `name` from " . ITEMS . " where `name` = '" . $item_num . "'" ;
+        $this->load->model('util_model');
+        $sql = "select `name` from " . ITEMS . " where `name` = '" . $this->util_model->str_escape($item_num) . "'" ;
         if($id != null) {
             $sql = $sql . " and `id` != '" . $id . "'";
         }
@@ -48,9 +49,9 @@ class Item extends CI_Controller {
             return false; // duplicate
         } else {
             $this->dbtable = array(
-                'name'  => $this->input->post('item_num'),
-                'unit'  => $this->input->post('unit'),
-                'unit1' => $this->input->post('unit1'),
+                'name'  => $this->input->post('item_num', true),
+                'unit'  => $this->input->post('unit', true),
+                'unit1' => $this->input->post('unit1', true),
             );
             return true;
         }
@@ -72,7 +73,7 @@ class Item extends CI_Controller {
                 return $this->show_page("detail_add", null);
             }
             $id = $this->order_model->set_db_data(ITEMS, null, $this->dbtable);
-            if($this->input->post('add_next') == 1) {
+            if($this->input->post('add_next', true) == 1) {
                 redirect('item/add', 'refresh');
             } else {
                 redirect('item', 'refresh');
@@ -103,6 +104,10 @@ class Item extends CI_Controller {
 
         $this->order_model->remove(ITEMS, $id);
         redirect('item', 'refresh');
+    }
+
+    public function getunit($item_num) {
+        echo json_encode($this->order_model->getunit($item_num));
     }
 }
 

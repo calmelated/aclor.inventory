@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-define("MAX_ITEMS", "16");
+define("MAX_OUTODR", "16");
 
 class Outodr extends CI_Controller {
 
@@ -18,8 +18,7 @@ class Outodr extends CI_Controller {
         $data['act']    = $act; // list or detail_add or detail_edit
         $data['outodrs'] = $this->order_model->get_inout_order("outodr", $act, $id, $item, $from, $to);
         if($page == "detail") {
-            $data['units']     = $this->order_model->get_typeahead("units");
-            $data['items']     = $this->order_model->get_typeahead("items");
+            $data['items'] = $this->order_model->get_typeahead("items", "name");
         }
 
         $this->load->view('header'      ,$data);
@@ -43,7 +42,7 @@ class Outodr extends CI_Controller {
         $this->form_validation->set_rules('qty1_'     . $i, 'Qty1'   , 'xss_clean');
         $this->form_validation->set_rules('unit1_'    . $i, 'Unit1'  , 'xss_clean');
 
-        for($i = 1; $i < MAX_ITEMS; $i = $i + 1) {
+        for($i = 1; $i < MAX_OUTODR; $i = $i + 1) {
             $this->form_validation->set_rules('item_num_' . $i, 'Item #' , 'xss_clean');
             $this->form_validation->set_rules('qty_'      . $i, 'Qty'    , 'xss_clean');
             $this->form_validation->set_rules('unit_'     . $i, 'Unit'   , 'xss_clean');
@@ -74,7 +73,7 @@ class Outodr extends CI_Controller {
             }
 
             $id = $this->order_model->set_outodr(null);
-            if($this->input->post('add_next') == 1) {
+            if($this->input->post('add_next', true) == 1) {
                 redirect('outodr/add', 'refresh');
             } else {
                 redirect('outodr/id/'.$id, 'refresh');

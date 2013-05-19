@@ -67,6 +67,7 @@ $route['noauth']                                      = 'order/noauth';
 $route['item/add']                                    = 'item/add';
 $route['item/edit/(:$any)']                           = 'item/edit/$1';
 $route['item/remove/(:$any)']                         = 'item/remove/$1';
+$route['item/getunit/(:$any)']                        = 'item/getunit/$1';
 $route['item/(:$any)']                                = 'item/$1';
 
 $route['comp/add']                                    = 'comp/add';

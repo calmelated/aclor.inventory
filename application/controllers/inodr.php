@@ -16,9 +16,8 @@ class Inodr extends CI_Controller {
         $data['act']    = $act; // list or detail_add or detail_edit
         $data['inodrs'] = $this->order_model->get_inout_order("inodr", $act, $id, $item, $from, $to);
         if($page == "detail") {
-            $data['units']     = $this->order_model->get_typeahead("units");
-            $data['items']     = $this->order_model->get_typeahead("items");
-            $data['companies'] = $this->order_model->get_typeahead("companies");
+            $data['items']     = $this->order_model->get_typeahead("items", "name");
+            $data['companies'] = $this->order_model->get_typeahead("companies", "name");
         }
 
         $this->load->view('header'      ,$data);
@@ -61,7 +60,7 @@ class Inodr extends CI_Controller {
             }
 
             $id = $this->order_model->set_inodr(null);
-            if($this->input->post('add_next') == 1) {
+            if($this->input->post('add_next', true) == 1) {
                 redirect('inodr/add', 'refresh');
             } else {
                 redirect('inodr/id/'.$id, 'refresh');

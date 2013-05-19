@@ -82,7 +82,7 @@
         <label class="control-label">Qty<span class="star"> * </span></label>
         <div class="controls">
             <input type="text" name="qty"  class="input-small inodr" value="<?php if(isset($inodr['qty']))  echo $inodr['qty']?>">
-            <input type="text" name="unit" class="input-small inodr" value="<?php if(isset($inodr['unit'])) echo $inodr['unit']?>" placeholder="Unit" data-provide="typeahead">
+            <input type="text" name="unit" class="input-small inodr" value="<?php if(isset($inodr['unit'])) echo $inodr['unit']?>" placeholder="Unit">
             <?php echo '<div style="color:red">'.form_error('qty').'</div>';?>
             <?php echo '<div style="color:red">'.form_error('unit').'</div>';?>
         </div>
@@ -92,7 +92,7 @@
         <label class="control-label">Qty1</label>
         <div class="controls">
             <input type="text" name="qty1"  class="input-small inodr" value="<?php if(isset($inodr['qty1']))  echo $inodr['qty1']?>">
-            <input type="text" name="unit1" class="input-small inodr" value="<?php if(isset($inodr['unit1'])) echo $inodr['unit1']?>" placeholder="Unit" data-provide="typeahead">
+            <input type="text" name="unit1" class="input-small inodr" value="<?php if(isset($inodr['unit1'])) echo $inodr['unit1']?>" placeholder="Unit">
             <?php echo '<div style="color:red">'.form_error('qty1').'</div>';?>
             <?php echo '<div style="color:red">'.form_error('unit1').'</div>';?>
         </div>
@@ -110,6 +110,7 @@
 </form>
 
 <script src="script/scripts.js"></script>
+<script src="script/jquery-selectboxes.js"></script>
 <script>
     $(document).ready(function() {
         <?php if ($act == "detail") { ?>
@@ -140,16 +141,28 @@
             // set type ahead for some field
             var companies = <?=$companies;?>;
             var items = <?=$items;?>;
-            var units = <?=$units;?>;
 
             $("input[name='rcv_date']").attr({'autocomplete': 'off'});
             input_typeahead("owner", companies);
             input_typeahead("vendor", companies);
             input_typeahead("item_num", items);
-            input_typeahead("unit", units);
-            input_typeahead("unit1", units);
 
             form_validate("#receipt_form");
         <?php } ?>
+
+        $("input[name='item_num']").change(function () {
+            $.ajax({
+                type: "GET",
+                url: 'item/getunit/' + $(this).val(),
+                cache: false,
+                data: '',
+                success: function(data){
+                    rst = JSON.parse(data);
+                    //console.log(unit.item_num);
+                    $("input[name='unit']").val(rst.unit);
+                    $("input[name='unit1']").val(rst.unit1);
+                }
+            });
+        });
     });
 </script>

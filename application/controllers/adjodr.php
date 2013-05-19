@@ -16,8 +16,7 @@ class Adjodr extends CI_Controller {
         $data['act']     = $act; // list or detail_add or detail_edit
         $data['adjodrs'] = $this->order_model->get_inout_order("adjodr", $act, $id, $item, $from, $to);
         if($page == "detail") {
-            $data['units'] = $this->order_model->get_typeahead("units");
-            $data['items'] = $this->order_model->get_typeahead("items");
+            $data['items'] = $this->order_model->get_typeahead("items", "name");
         }
 
         $this->load->view('header'        ,$data);
@@ -57,7 +56,7 @@ class Adjodr extends CI_Controller {
                 return $this->show_page("detail_add", null, null, null, null);
             }
             $id = $this->order_model->set_adjodr(null);
-            if($this->input->post('add_next') == 1) {
+            if($this->input->post('add_next', true) == 1) {
                 redirect('adjodr/add', 'refresh');
             } else {
                 redirect('adjodr/id/'.$id, 'refresh');

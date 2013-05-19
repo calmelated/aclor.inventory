@@ -123,13 +123,23 @@
 
             // set type ahead for some field
             var items = <?=$items;?>;
-            var units = <?=$units;?>;
             var reasons = ["Surplus", "Loss", "Scrapped parts", "Order cancel"];
 
             input_typeahead("item_num", items);
-            input_typeahead("unit", units);
-            input_typeahead("unit1", units);
             input_typeahead("reason", reasons);
+            $("input[name='item_num']").change(function () {
+                $.ajax({
+                    type: "GET",
+                    url: 'item/getunit/' + $(this).val(),
+                    cache: false,
+                    data: '',
+                    success: function(data){
+                        rst = JSON.parse(data);
+                        $("input[name='unit']").val(rst.unit);
+                        $("input[name='unit1']").val(rst.unit1);
+                    }
+                });
+            });
 
             form_validate("#adjust_form");
         <?php } ?>

@@ -40,7 +40,8 @@ class Comp extends CI_Controller {
     }
 
     public function check_company($comp_name, $id) {
-        $sql = "select `name` from " . COMPANIES . " where `name` = '" . $comp_name . "'" ;
+        $this->load->model('util_model');
+        $sql = "select `name` from " . COMPANIES . " where `name` = '" . $this->util_model->str_escape($comp_name) . "'" ;
         if($id != null) {
             $sql = $sql . " and `id` != '" . $id . "'";
         }
@@ -52,13 +53,13 @@ class Comp extends CI_Controller {
             return false; // duplicate
         } else {
             $this->dbtable = array(
-                'name'          => $this->input->post('name'),
-                'tel'           => $this->input->post('tel'),
-                'fax'           => $this->input->post('fax'),
-                'contact'       => $this->input->post('contact'),
-                'email'         => $this->input->post('email'),
-                'address'       => $this->input->post('address'),
-                'bill_address'  => $this->input->post('bill_address'),
+                'name'          => $this->input->post('name', true),
+                'tel'           => $this->input->post('tel', true),
+                'fax'           => $this->input->post('fax', true),
+                'contact'       => $this->input->post('contact', true),
+                'email'         => $this->input->post('email', true),
+                'address'       => $this->input->post('address', true),
+                'bill_address'  => $this->input->post('bill_address', true),
             );
             return true;
         }
@@ -80,7 +81,7 @@ class Comp extends CI_Controller {
                 return $this->show_page("detail_add", null);
             }
             $id = $this->order_model->set_db_data(COMPANIES, null, $this->dbtable);
-            if($this->input->post('add_next') == 1) {
+            if($this->input->post('add_next', true) == 1) {
                 redirect('comp/add', 'refresh');
             } else {
                 redirect('comp', 'refresh');
@@ -100,6 +101,7 @@ class Comp extends CI_Controller {
                 return $this->show_page("detail_edit", null);
             }
             $this->order_model->set_db_data(COMPANIES, $id, $this->dbtable);
+return;
             redirect('comp', 'refresh');
         }
     }

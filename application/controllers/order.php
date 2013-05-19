@@ -13,10 +13,10 @@ class Order extends CI_Controller {
         }
 
         $data['orders']   = $result_data;
-        $data['req_from'] = $this->input->post('from');
-        $data['req_to']   = $this->input->post('to');
+        $data['req_from'] = $this->input->post('from', true);
+        $data['req_to']   = $this->input->post('to', true);
         if($page == "order_range") {
-            $data['items'] = $this->order_model->get_typeahead("items");
+            $data['items'] = $this->order_model->get_typeahead("items", "name");
         }
 
         $this->load->view('header', $data);
@@ -53,9 +53,9 @@ class Order extends CI_Controller {
             return $this->show_page('order_range', null);
         }
 
-        $from     = $this->input->post('from');
-        $to       = $this->input->post('to');
-        $item_num = $this->input->post('item_num');
+        $from     = $this->input->post('from', true);
+        $to       = $this->input->post('to', true);
+        $item_num = $this->input->post('item_num', true);
         if($item_num == "any" || $item_num == "" || $item_num == "all") {
             $item_num = null;
         }

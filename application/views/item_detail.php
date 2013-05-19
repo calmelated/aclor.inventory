@@ -20,7 +20,7 @@
     </div>
 
     <div class="control-group">
-        <label class="control-label">Qty<span class="star"> * </span></label>
+        <label class="control-label">Unit<span class="star"> * </span></label>
         <div class="controls">
             <input type="text" name="unit" class="input-small adjodr" value="<?php if(isset($item['unit'])) echo $item['unit']?>">
             <?php echo '<div style="color:red">'.form_error('unit').'</div>';?>
@@ -28,7 +28,7 @@
     </div>
 
     <div class="control-group">
-        <label class="control-label">Qty1</label>
+        <label class="control-label">Unit1</label>
         <div class="controls">
             <input type="text" name="unit1" class="input-small adjodr" value="<?php if(isset($item['unit1'])) echo $item['unit1']?>">
             <?php echo '<div style="color:red">'.form_error('unit1').'</div>';?>

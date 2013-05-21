@@ -8,6 +8,9 @@ class Item extends CI_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->model('order_model');
+        $this->load->library('Datatables');
+        $this->load->library('table');
+        $this->load->database();
     }
 
     private function show_page($act, $id) {
@@ -17,7 +20,7 @@ class Item extends CI_Controller {
         }
 
         $data['act']   = $act; // list or detail_add or detail_edit
-        $data['items'] = $this->order_model->get_db_data(ITEMS, $id);
+        $data['items'] = ($act == "detail_edit") ? $this->order_model->get_db_data(ITEMS, $id) : "";
 
         $this->load->view('header'        ,$data);
         $this->load->view('nav'           ,$data);
@@ -108,6 +111,13 @@ class Item extends CI_Controller {
 
     public function getunit($item_num) {
         echo json_encode($this->order_model->getunit($item_num));
+    }
+
+    //function to handle callbacks
+    public function datatable() {
+        $this->datatables->select('name,unit,unit1,id')->from('items');
+        $data = $this->datatables->gen_list_act(3); // 3: id
+        echo $data;
     }
 }
 

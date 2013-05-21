@@ -101,7 +101,6 @@ class Comp extends CI_Controller {
                 return $this->show_page("detail_edit", null);
             }
             $this->order_model->set_db_data(COMPANIES, $id, $this->dbtable);
-return;
             redirect('comp', 'refresh');
         }
     }

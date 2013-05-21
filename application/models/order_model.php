@@ -199,7 +199,7 @@ class Order_model extends CI_Model {
 
     public function set_inodr_file($item_num, $qty, $unit) {
         // update for typeahead
-        $this->db->query("insert ignore into `items` (`name`, `unit`) values ('" . $item_num . "', '" . $unit . "');");
+        $this->db->query("insert ignore into `items` (`name`, `unit`) values ('" . $this->util_model->str_escape($item_num) . "', '" . $this->util_model->str_escape($unit) . "');");
 
         // insert record for order table
         $data = array(

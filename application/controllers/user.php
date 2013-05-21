@@ -20,6 +20,9 @@ class User extends CI_Controller {
         // load the BotDetect Captcha library
         $this->load->library('BotDetect/BotDetectCaptcha', $captchaConfig);
         $this->load->model('user_model', '', true);
+        $this->load->library('Datatables');
+        $this->load->library('table');
+        $this->load->database();
     }
 
     public function index($formval = 'true') {
@@ -87,7 +90,7 @@ class User extends CI_Controller {
     }
 
     public function ulist($page = "list") {
-        $data['users'] = $this->user_model->get_users(null);
+        $data['users'] = ($page == "detail") ? $this->user_model->get_users(null) : "";
         $this->load->view('header'      ,$data);
         $this->load->view('nav'         ,$data);
         $this->load->view('user_'.$page ,$data);
@@ -149,6 +152,13 @@ class User extends CI_Controller {
             $this->form_validation->set_message('captcha', 'Please retype the characters from the image correctly.');
         }
         return $isHuman;
+    }
+
+    //function to handle callbacks
+    public function datatable() {
+        $this->datatables->select('username,password,auth,id')->from(USERS);
+        $data = $this->datatables->gen_list_act(3, null, null, 'user/remove'); // 3: id
+        echo $data;
     }
 }
 

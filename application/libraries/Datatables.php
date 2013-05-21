@@ -234,15 +234,15 @@
       $this->get_paging();
       $this->get_ordering();
       $this->get_filtering();
-      return $this->produce_output($charset, $listact);
+      return $this->produce_output($charset);
     }
 
-    public function gen_list_act($listact = null)
+    public function gen_list_act($listact = null, $btn_view, $btn_edit, $btn_remove)
     {
       $this->get_paging();
       $this->get_ordering();
       $this->get_filtering();
-      return $this->produce_output('UTF-8', $listact);
+      return $this->produce_output('UTF-8', $listact, $btn_view, $btn_edit, $btn_remove);
     }
 
     /**
@@ -345,7 +345,8 @@
     * @param string charset
     * @return string
     */
-    protected function produce_output($charset, $listact)
+    protected function produce_output($charset, $listact = null,
+            $btn_view = null, $btn_edit = null, $btn_remove = null)
     {
       $aaData = array();
       $rResult = $this->get_display_result();
@@ -375,9 +376,20 @@
       $sColumns = array_diff($this->columns, $this->unset_columns);
       $sColumns = array_merge_recursive($sColumns, array_keys($this->add_columns));
 
+      // Chad: Add List Action Column
       if($listact != null) {
           for($i = 0; $i < count($aaData); $i = $i + 1) {
-              $aaData[$i][$listact] = '<a href="item/edit/' . $aaData[$i][$listact] . '" class="btn btn-info">Edit</a> <a href="item/remove/' . $aaData[$i][$listact] . '" class="btn btn-danger">Delete</a>';
+              $id_ = $aaData[$i][$listact];
+              $aaData[$i][$listact] = '';
+              if($btn_view != null) {
+                  $aaData[$i][$listact] = $aaData[$i][$listact] . '<a href="' . $btn_view   . '/' . $id_ . '" class="btn">View</a> ';
+              }
+              if($btn_edit != null) {
+                  $aaData[$i][$listact] = $aaData[$i][$listact] . '<a href="' . $btn_edit   . '/' . $id_ . '" class="btn btn-info">Edit</a> ';
+              }
+              if($btn_remove != null) {
+                  $aaData[$i][$listact] = $aaData[$i][$listact] . '<a href="' . $btn_remove . '/' . $id_ . '" class="btn btn-danger">Delete</a> ';
+              }
           }
       }
 

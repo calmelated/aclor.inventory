@@ -8,6 +8,9 @@ class Comp extends CI_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->model('order_model');
+        $this->load->library('Datatables');
+        $this->load->library('table');
+        $this->load->database();
     }
 
     private function show_page($act, $id) {
@@ -17,7 +20,7 @@ class Comp extends CI_Controller {
         }
 
         $data['act']   = $act; // list or detail_add or detail_edit
-        $data['comps'] = $this->order_model->get_db_data(COMPANIES, $id);
+        $data['comps'] = ($act == "detail_edit") ? $this->order_model->get_db_data(COMPANIES, $id) : "";
 
         $this->load->view('header'        ,$data);
         $this->load->view('nav'           ,$data);
@@ -112,6 +115,13 @@ class Comp extends CI_Controller {
 
         $this->order_model->remove(COMPANIES, $id);
         redirect('comp', 'refresh');
+    }
+
+    //function to handle callbacks
+    public function datatable() {
+        $this->datatables->select('name,tel,fax,contact,email,address,id')->from(COMPANIES);
+        $data = $this->datatables->gen_list_act(6, null, 'comp/edit', 'comp/remove'); // 3: id
+        echo $data;
     }
 }
 

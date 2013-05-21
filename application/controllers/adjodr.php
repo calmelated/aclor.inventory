@@ -5,6 +5,9 @@ class Adjodr extends CI_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->model('order_model');
+        $this->load->library('Datatables');
+        $this->load->library('table');
+        $this->load->database();
     }
 
     private function show_page($act, $id, $item, $from, $to) {
@@ -14,9 +17,9 @@ class Adjodr extends CI_Controller {
         }
 
         $data['act']     = $act; // list or detail_add or detail_edit
-        $data['adjodrs'] = $this->order_model->get_inout_order("adjodr", $act, $id, $item, $from, $to);
         if($page == "detail") {
-            $data['items'] = $this->order_model->get_typeahead("items", "name");
+            $data['adjodrs'] = $this->order_model->get_inout_order("adjodr", $act, $id, $item, $from, $to);
+            $data['items']   = $this->order_model->get_typeahead("items", "name");
         }
 
         $this->load->view('header'        ,$data);
@@ -103,6 +106,17 @@ class Adjodr extends CI_Controller {
 
     public function item_time($item, $from, $to) {
         $this->show_page("list", null, $item, $from, $to);
+    }
+
+    //function to handle callbacks
+    public function datatable() {
+        $this->datatables->select('adj_date,item_num,reason,qty,unit,qty1,unit1,id')->from("adjodr");
+        if ($this->session->userdata['user_auth'] > 1) { // admin, manager
+            $data = $this->datatables->gen_list_act(7, 'adjodr/id', 'adjodr/id_edit', 'adjodr/id_del', 3); // 3: id
+        } else {
+            $data = $this->datatables->gen_list_act(7, 'adjodr/id', null, null, 3); // 3: id
+        }
+        echo $data;
     }
 }
 

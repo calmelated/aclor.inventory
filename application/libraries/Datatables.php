@@ -237,12 +237,12 @@
       return $this->produce_output($charset);
     }
 
-    public function gen_list_act($listact = null, $btn_view, $btn_edit, $btn_remove)
+    public function gen_list_act($listact = null, $btn_view, $btn_edit, $btn_remove, $mcol)
     {
       $this->get_paging();
       $this->get_ordering();
       $this->get_filtering();
-      return $this->produce_output('UTF-8', $listact, $btn_view, $btn_edit, $btn_remove);
+      return $this->produce_output('UTF-8', $listact, $btn_view, $btn_edit, $btn_remove, $mcol);
     }
 
     /**
@@ -346,7 +346,7 @@
     * @return string
     */
     protected function produce_output($charset, $listact = null,
-            $btn_view = null, $btn_edit = null, $btn_remove = null)
+            $btn_view = null, $btn_edit = null, $btn_remove = null, $mcol = null)
     {
       $aaData = array();
       $rResult = $this->get_display_result();
@@ -382,7 +382,7 @@
               $id_ = $aaData[$i][$listact];
               $aaData[$i][$listact] = '';
               if($btn_view != null) {
-                  $aaData[$i][$listact] = $aaData[$i][$listact] . '<a href="' . $btn_view   . '/' . $id_ . '" class="btn">View</a> ';
+                  $aaData[$i][$listact] = $aaData[$i][$listact] . '<a href="' . $btn_view   . '/' . $id_ . '" class="btn btn-primary">View</a> ';
               }
               if($btn_edit != null) {
                   $aaData[$i][$listact] = $aaData[$i][$listact] . '<a href="' . $btn_edit   . '/' . $id_ . '" class="btn btn-info">Edit</a> ';
@@ -390,6 +390,15 @@
               if($btn_remove != null) {
                   $aaData[$i][$listact] = $aaData[$i][$listact] . '<a href="' . $btn_remove . '/' . $id_ . '" class="btn btn-danger">Delete</a> ';
               }
+
+          }
+      }
+
+      // merge qty, unit column
+      if($mcol != null) {
+          for($i = 0; $i < count($aaData); $i = $i + 1) {
+              $aaData[$i][$mcol]   = $aaData[$i][$mcol]   . ' ' . $aaData[$i][$mcol+1];
+              $aaData[$i][$mcol+2] = $aaData[$i][$mcol+2] . ' ' . $aaData[$i][$mcol+3];
           }
       }
 

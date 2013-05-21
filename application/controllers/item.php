@@ -116,7 +116,11 @@ class Item extends CI_Controller {
     //function to handle callbacks
     public function datatable() {
         $this->datatables->select('name,unit,unit1,id')->from(ITEMS);
-        $data = $this->datatables->gen_list_act(3, null, 'item/edit', 'item/remove'); // 3: id
+        if ($this->session->userdata['user_auth'] > 1) { // admin, manager
+            $data = $this->datatables->gen_list_act(3, null, 'item/edit', 'item/remove', null); // 3: id
+        } else {
+            $data = $this->datatables->gen_list_act(3, null, null, null, null); // 3: id
+        }
         echo $data;
     }
 }

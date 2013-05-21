@@ -157,7 +157,11 @@ class User extends CI_Controller {
     //function to handle callbacks
     public function datatable() {
         $this->datatables->select('username,password,auth,id')->from(USERS);
-        $data = $this->datatables->gen_list_act(3, null, null, 'user/remove'); // 3: id
+        if ($this->session->userdata['user_auth'] > 1) { // admin, manager
+            $data = $this->datatables->gen_list_act(3, null, null, 'user/remove', null); // 3: id
+        } else {
+            $data = $this->datatables->gen_list_act(3, null, null, null, null); // 3: id
+        }
         echo $data;
     }
 }

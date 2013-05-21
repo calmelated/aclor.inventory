@@ -7,6 +7,9 @@ class Outodr extends CI_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->model('order_model');
+        $this->load->library('Datatables');
+        $this->load->library('table');
+        $this->load->database();
     }
 
     private function show_page($act, $id, $item, $from, $to) {
@@ -16,8 +19,8 @@ class Outodr extends CI_Controller {
         }
 
         $data['act']    = $act; // list or detail_add or detail_edit
-        $data['outodrs'] = $this->order_model->get_inout_order("outodr", $act, $id, $item, $from, $to);
         if($page == "detail") {
+            $data['outodrs'] = $this->order_model->get_inout_order("outodr", $act, $id, $item, $from, $to);
             $data['items'] = $this->order_model->get_typeahead("items", "name");
         }
 
@@ -119,6 +122,17 @@ class Outodr extends CI_Controller {
 
     public function item_time($item, $from, $to) {
         $this->show_page("list", null, $item, $from, $to);
+    }
+
+    //function to handle callbacks
+    public function datatable() {
+        $this->datatables->select('req_date,wo_num,fin_prod,raw_num,prod_approved,wh_approved,id')->from("outodr");
+        if ($this->session->userdata['user_auth'] > 1) { // admin, manager
+            $data = $this->datatables->gen_list_act(6, 'outodr/id', 'outodr/id_edit', 'outodr/id_del', null); // 3: id
+        } else {
+            $data = $this->datatables->gen_list_act(6, 'outodr/id', null, null, null); // 3: id
+        }
+        echo $data;
     }
 }
 

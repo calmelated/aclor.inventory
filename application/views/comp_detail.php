@@ -60,10 +60,10 @@
     </div>
 
     <div class="control-group">
-        <label class="control-label">Billing Address</label>
+        <label class="control-label">City/State<span class="star"> * </span></label>
         <div class="controls">
-            <input type="text" name="bill_address" class="comp input-xxlarge" value="<?php if(isset($comp['bill_address'])) echo $comp['bill_address']?>">
-            <?php echo '<div style="color:red">'.form_error('bill_address').'</div>';?>
+            <input type="text" name="city" class="comp input-xxlarge" value="<?php if(isset($comp['city'])) echo $comp['city']?>">
+            <?php echo '<div style="color:red">'.form_error('city').'</div>';?>
         </div>
     </div>
 

@@ -22,7 +22,7 @@
     <div class="control-group">
         <label class="control-label">Unit<span class="star"> * </span></label>
         <div class="controls">
-            <input type="text" name="unit" class="input-small adjodr" value="<?php if(isset($item['unit'])) echo $item['unit']?>">
+            <input type="text" name="unit" class="input-small item" value="<?php if(isset($item['unit'])) echo $item['unit']?>">
             <?php echo '<div style="color:red">'.form_error('unit').'</div>';?>
         </div>
     </div>
@@ -30,10 +30,19 @@
     <div class="control-group">
         <label class="control-label">Unit1</label>
         <div class="controls">
-            <input type="text" name="unit1" class="input-small adjodr" value="<?php if(isset($item['unit1'])) echo $item['unit1']?>">
+            <input type="text" name="unit1" class="input-small item" value="<?php if(isset($item['unit1'])) echo $item['unit1']?>">
             <?php echo '<div style="color:red">'.form_error('unit1').'</div>';?>
         </div>
     </div>
+
+    <div class="control-group">
+        <label class="control-label">Description</label>
+        <div class="controls">
+            <input type="text" name="desc" class="input-xxlarge item" value="<?php if(isset($item['desc'])) echo $item['desc']?>">
+            <?php echo '<div style="color:red">'.form_error('desc').'</div>';?>
+        </div>
+    </div>
+
 
     <?php
         $data['act']    = $act;

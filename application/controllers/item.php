@@ -29,9 +29,10 @@ class Item extends CI_Controller {
     }
 
     private function form_verify($id) {
-        $this->form_validation->set_rules('item_num', 'Item #', 'required|max_length[16]|xss_clean|callback_check_item['.$id.']');
-        $this->form_validation->set_rules('unit'    , 'Unit'  , 'required|xss_clean');
-        $this->form_validation->set_rules('unit1'   , 'Unit1' , 'xss_clean');
+        $this->form_validation->set_rules('item_num', 'Item #'      , 'required|max_length[16]|xss_clean|callback_check_item['.$id.']');
+        $this->form_validation->set_rules('unit'    , 'Unit'        , 'required|max_length[8]|xss_clean');
+        $this->form_validation->set_rules('unit1'   , 'Unit1'       , 'max_length[8]|xss_clean');
+        $this->form_validation->set_rules('desc'    , 'Description' , 'max_length[80]|xss_clean');
         if ($this->form_validation->run() == false) {
             return false;
         }
@@ -53,8 +54,9 @@ class Item extends CI_Controller {
         } else {
             $this->dbtable = array(
                 'name'  => $this->input->post('item_num', true),
-                'unit'  => $this->input->post('unit', true),
+                'unit'  => $this->input->post('unit' , true),
                 'unit1' => $this->input->post('unit1', true),
+                'desc'  => $this->input->post('desc' , true),
             );
             return true;
         }

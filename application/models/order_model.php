@@ -197,9 +197,9 @@ class Order_model extends CI_Model {
         return $this->db->query($sql)->result_array();
     }
 
-    public function set_inodr_file($item_num, $qty, $unit) {
+    public function set_inodr_file($item_num, $qty, $unit, $desc) {
         // update for typeahead
-        $this->db->query("insert ignore into `items` (`name`, `unit`) values ('" . $this->util_model->str_escape($item_num) . "', '" . $this->util_model->str_escape($unit) . "');");
+        $this->db->query("insert ignore into `items` (`name`, `unit`, `desc`) values ('" . $this->util_model->str_escape($item_num) . "', '" . $this->util_model->str_escape($unit) . "', '" . $this->util_model->str_escape($desc) . "');");
 
         // insert record for order table
         $data = array(
@@ -605,7 +605,7 @@ class Order_model extends CI_Model {
             }
 
             print 'Import Type: ' . $type . ', Itme: ' . $item . ', Desc: ' . $cols[1] . ', Number: ' . $num . '<br>';
-            $this->set_inodr_file($item, $num, 'unit');
+            $this->set_inodr_file($item, $num, 'unit', $cols[1]);
             /*
             $this->db->insert("inodr", array(
                     "rcv_date" => "2013-05-01",

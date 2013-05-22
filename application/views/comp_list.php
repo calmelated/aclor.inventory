@@ -7,7 +7,6 @@
                 <th class="span1">Tel</th>
                 <th class="span1">Fax</th>
                 <th class="span1">Email</th>
-                <th class="span3">Address</th>
                 <th class="span2">
                     <a href="comp/add" class="btn btn-primary">New</a>
                 </th>
@@ -24,7 +23,7 @@ $(document).ready(function() {
         "sPaginationType": "bootstrap",
         "bProcessing": true,
         "bServerSide": true,
-        "aaSorting": [[6, "desc"]],
+        "aaSorting": [[5, "desc"]],
         "iDisplayLength": 10,
         "aLengthMenu": [[10, 25, 50, 100, Math.pow(2,64)], [10, 25, 50, 100, 'All']],
         "sAjaxSource": 'comp/datatable',

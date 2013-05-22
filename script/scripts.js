@@ -21,6 +21,12 @@ function form_validate(form) {
                 raw_num:    { required: true },
                 prod_approved: { required: true },
                 wh_approved:   { required: true },
+                name:       { required: true },
+                address:    { required: true },
+                city:       { required: true },
+                tel:        { required: true },
+                email:      { required: true },
+                contact:    { required: true },
                 import_num: { minlength: 2  , maxlength:   16 }
             },
             onkeyup: false,

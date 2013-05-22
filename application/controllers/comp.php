@@ -30,12 +30,12 @@ class Comp extends CI_Controller {
 
     private function form_verify($id) {
         $this->form_validation->set_rules('name'        , 'Company Name'   , 'trim|required|max_length[32]|xss_clean|callback_check_company['.$id.']');
-        $this->form_validation->set_rules('tel'         , 'Telephone'      , 'trim|max_length[16]|xss_clean');
+        $this->form_validation->set_rules('tel'         , 'Telephone'      , 'trim|required|max_length[16]|xss_clean');
         $this->form_validation->set_rules('fax'         , 'FAX'            , 'trim|max_length[16]|xss_clean');
-        $this->form_validation->set_rules('contact'     , 'Contact Person' , 'trim|max_length[16]|xss_clean');
-        $this->form_validation->set_rules('email'       , 'Email'          , 'trim|max_length[24]|valid_email|xss_clean');
-        $this->form_validation->set_rules('address'     , 'Address'        , 'trim|max_length[256]|xss_clean');
-        $this->form_validation->set_rules('bill_address', 'Billing Address', 'trim|max_length[256]|xss_clean');
+        $this->form_validation->set_rules('contact'     , 'Contact Person' , 'trim|required|max_length[16]|xss_clean');
+        $this->form_validation->set_rules('email'       , 'Email'          , 'trim|required|max_length[24]|valid_email|xss_clean');
+        $this->form_validation->set_rules('address'     , 'Address'        , 'trim|required|max_length[80]|xss_clean');
+        $this->form_validation->set_rules('city'        , 'City, State'     ,'trim|required|max_length[64]|xss_clean');
         if ($this->form_validation->run() == false) {
             return false;
         }
@@ -62,7 +62,7 @@ class Comp extends CI_Controller {
                 'contact'       => $this->input->post('contact', true),
                 'email'         => $this->input->post('email', true),
                 'address'       => $this->input->post('address', true),
-                'bill_address'  => $this->input->post('bill_address', true),
+                'city'          => $this->input->post('city', true),
             );
             return true;
         }
@@ -119,11 +119,11 @@ class Comp extends CI_Controller {
 
     //function to handle callbacks
     public function datatable() {
-        $this->datatables->select('name,tel,fax,contact,email,address,id')->from(COMPANIES);
+        $this->datatables->select('name,contact,tel,fax,email,id')->from(COMPANIES);
         if ($this->session->userdata['user_auth'] > 1) { // admin, manager
-            $data = $this->datatables->gen_list_act(6, null, 'comp/edit', 'comp/remove', null); // 3: id
+            $data = $this->datatables->gen_list_act(5, null, 'comp/edit', 'comp/remove', null); // 3: id
         } else {
-            $data = $this->datatables->gen_list_act(6, null, null, null, null); // 3: id
+            $data = $this->datatables->gen_list_act(5, null, null, null, null); // 3: id
         }
         echo $data;
     }

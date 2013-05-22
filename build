@@ -52,8 +52,8 @@ prj_code_compress() {
 
     # javascript files compress
     [ ! -x `which minijs` ] && echo "Please install Google Clouser firstly !" && exit 1
-    f=$dst/script/products.js ; minijs $f ; mv $f.mini $f
-    f=$dst/script/script.js ; minijs $f ; mv $f.mini $f
+    f=$dst/script/DT_bootstrap.js ; minijs $f ; mv $f.mini $f
+    f=$dst/script/scripts.js ; minijs $f ; mv $f.mini $f
 }
 
 prj_chkstyle() {
@@ -67,6 +67,8 @@ prj_chkstyle() {
             [ "`echo $f|grep mootools`"     != "" ] && continue;
             [ "`echo $f|grep jqgalscroll`"  != "" ] && continue;
             [ "`echo $f|grep caption`"      != "" ] && continue;
+            [ "`echo $f|grep bootstrap`"    != "" ] && continue;
+            [ "`echo $f|grep jqfile`"       != "" ] && continue;
             jshint $f >> $jslog
             #echo >> $jslog
         done

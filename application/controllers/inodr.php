@@ -5,6 +5,9 @@ class Inodr extends CI_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->model('order_model');
+        $this->load->library('Datatables');
+        $this->load->library('table');
+        $this->load->database();
     }
 
     private function show_page($act, $id, $item, $from, $to) {
@@ -14,10 +17,10 @@ class Inodr extends CI_Controller {
         }
 
         $data['act']    = $act; // list or detail_add or detail_edit
-        $data['inodrs'] = $this->order_model->get_inout_order("inodr", $act, $id, $item, $from, $to);
         if($page == "detail") {
             $data['items']     = $this->order_model->get_typeahead("items", "name");
             $data['companies'] = $this->order_model->get_typeahead("companies", "name");
+            $data['inodrs']    = $this->order_model->get_inout_order("inodr", $act, $id, $item, $from, $to);
         }
 
         $this->load->view('header'      ,$data);
@@ -106,6 +109,17 @@ class Inodr extends CI_Controller {
 
     public function item_time($item, $from, $to) {
         $this->show_page("list", null, $item, $from, $to);
+    }
+
+    //function to handle callbacks
+    public function datatable() {
+        $this->datatables->select('rcv_date,item_num,po_num,vendor,qty,unit,qty1,unit1,id')->from("inodr");
+        if ($this->session->userdata['user_auth'] > 1) { // admin, manager
+            $data = $this->datatables->gen_list_act(8, 'inodr/id', 'inodr/id_edit', 'inodr/id_del', 4); // 3: id
+        } else {
+            $data = $this->datatables->gen_list_act(8, 'inodr/id', null, null, 4); // 3: id
+        }
+        echo $data;
     }
 }
 

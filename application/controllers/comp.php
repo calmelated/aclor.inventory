@@ -127,6 +127,10 @@ class Comp extends CI_Controller {
         }
         echo $data;
     }
+
+    public function get_comp_info($comp) {
+        echo json_encode($this->order_model->get_comp_info($comp));
+    }
 }
 
 /* End of file inventory.php */

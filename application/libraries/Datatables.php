@@ -237,12 +237,15 @@
       return $this->produce_output($charset);
     }
 
-    public function gen_list_act($listact = null, $btn_view, $btn_edit, $btn_remove, $mcol)
-    {
+    public function gen_list_allact($listact = null, $btn_view, $btn_print, $btn_bol, $btn_packing, $btn_edit, $btn_remove, $mcol) {
       $this->get_paging();
       $this->get_ordering();
       $this->get_filtering();
-      return $this->produce_output('UTF-8', $listact, $btn_view, $btn_edit, $btn_remove, $mcol);
+      return $this->produce_output('UTF-8', $listact, $btn_view, $btn_print, $btn_bol, $btn_packing, $btn_edit, $btn_remove, $mcol);
+    }
+
+    public function gen_list_act($listact = null, $btn_view, $btn_edit, $btn_remove, $mcol) {
+      return $this->gen_list_allact($listact, $btn_view, null, null, null, $btn_edit, $btn_remove, $mcol);
     }
 
     /**
@@ -345,8 +348,9 @@
     * @param string charset
     * @return string
     */
-    protected function produce_output($charset, $listact = null,
-            $btn_view = null, $btn_edit = null, $btn_remove = null, $mcol = null)
+    protected function produce_output($charset, $listact = null, $btn_view = null,
+        $btn_print = null, $btn_bol = null, $btn_packing = null, $btn_edit = null,
+        $btn_remove = null, $mcol = null)
     {
       $aaData = array();
       $rResult = $this->get_display_result();
@@ -382,13 +386,22 @@
               $id_ = $aaData[$i][$listact];
               $aaData[$i][$listact] = '';
               if($btn_view != null) {
-                  $aaData[$i][$listact] = $aaData[$i][$listact] . '<a href="' . $btn_view   . '/' . $id_ . '" class="btn btn-primary">View</a> ';
+                  $aaData[$i][$listact] = $aaData[$i][$listact] . '<a href="' . $btn_view   . '/' . $id_ . '" class="btn btn-primary btn-mini">View</a> ';
+              }
+              if($btn_print != null) {
+                  $aaData[$i][$listact] = $aaData[$i][$listact] . '<a href="' . $btn_print  . '/' . $id_ . '" class="btn btn-mini" target="_blank">Print</a> ';
+              }
+              if($btn_bol != null) {
+                  $aaData[$i][$listact] = $aaData[$i][$listact] . '<a href="' . $btn_bol  . '/' . $id_ . '" class="btn btn-mini" target="_blank">BOL</a> ';
+              }
+              if($btn_packing != null) {
+                  $aaData[$i][$listact] = $aaData[$i][$listact] . '<a href="' . $btn_packing  . '/' . $id_ . '" class="btn btn-mini" target="_blank">Packing</a> ';
               }
               if($btn_edit != null) {
-                  $aaData[$i][$listact] = $aaData[$i][$listact] . '<a href="' . $btn_edit   . '/' . $id_ . '" class="btn btn-info">Edit</a> ';
+                  $aaData[$i][$listact] = $aaData[$i][$listact] . '<a href="' . $btn_edit   . '/' . $id_ . '" class="btn btn-info btn-mini">Edit</a> ';
               }
               if($btn_remove != null) {
-                  $aaData[$i][$listact] = $aaData[$i][$listact] . '<a href="' . $btn_remove . '/' . $id_ . '" class="btn btn-danger">Delete</a> ';
+                  $aaData[$i][$listact] = $aaData[$i][$listact] . '<a href="' . $btn_remove . '/' . $id_ . '" class="btn btn-danger btn-mini">Delete</a> ';
               }
 
           }

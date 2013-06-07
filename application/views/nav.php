@@ -10,41 +10,26 @@
         <div class="container">
             <ul class="nav">
                 <li class="active nav brand"><img src="img/logo.png" style="margin: 0;max-width: 128px;max-height: 24px;"/></li>
-                <li><a href="order">Stock</a></li>
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                        Material Receipt
+                        Inventory
                         <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <?php if ($this->session->userdata['user_auth'] > 0) {  // auth:operator,manager,admin ?>
-                            <li><a href="inodr/add">Add Receipt</a></li>
-                        <?php } ?>
-                        <li><a href="inodr">Receipt List</a></li>
+                        <li><a href="inodr">Material Receipt</a></li>
+                        <li><a href="outodr">Material Reqisition</a></li>
+                        <li><a href="adjodr">Stock Adjust</a></li>
+                        <li class="divider"></li>
+                        <li><a href="order">Stock Statement</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                        Material Reqisition
+                        Sales
                         <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <?php if ($this->session->userdata['user_auth'] > 0) {  // auth:operator,manager,admin ?>
-                            <li><a href="outodr/add">Add Reqisition</a></li>
-                        <?php } ?>
-                        <li><a href="outodr">Reqisition List</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                        Stock Adjust
-                        <b class="caret"></b>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <?php if ($this->session->userdata['user_auth'] > 0) {  // auth:operator,manager,admin ?>
-                            <li><a href="adjodr/add">Add Adjust</a></li>
-                        <?php } ?>
-                        <li><a href="adjodr">Adjust List</a></li>
+                        <li><a href="cpo">Customer P.O.</a></li>
                     </ul>
                 </li>
                 <?php if ($this->session->userdata['user_auth'] > 1) {  // auth:manager, admin ?>

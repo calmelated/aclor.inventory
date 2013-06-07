@@ -1,14 +1,14 @@
 
 <div class="container">
-    <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="list_table">
+    <table cellpadding="0" cellspacing="0" border="0" class="table table-hover table-striped table-bordered table-condenced zebra-striped" id="list_table">
         <thead>
             <tr>
                 <th class="span2">Item #</th>
                 <th class="span1">Unit</th>
                 <th class="span1">Unit1</th>
                 <th class="span1">
-                    <a href="fileup/items" class="btn">Import</a>
-                    <a href="item/add" class="btn btn-primary">New</a>
+                    <a href="fileup/items" class="btn btn-mini">Import</a>
+                    <a href="item/add" class="btn btn-primary btn-mini">New</a>
                 </th>
             </tr>
         </thead>

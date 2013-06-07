@@ -68,7 +68,15 @@ $route['item/add']                                    = 'item/add';
 $route['item/edit/(:$any)']                           = 'item/edit/$1';
 $route['item/remove/(:$any)']                         = 'item/remove/$1';
 $route['item/getunit/(:$any)']                        = 'item/getunit/$1';
+$route['item/getdesc/(:$any)']                        = 'item/getdesc/$1';
 $route['item/(:$any)']                                = 'item/$1';
+
+$route['cpo/add']                                     = 'cpo/add';
+$route['cpo/edit/(:$any)']                            = 'cpo/edit/$1';
+$route['cpo/remove/(:$any)']                          = 'cpo/remove/$1';
+$route['cpo/packing/(:$any)']                         = 'cpo/packing/$1';
+$route['cpo/bol/(:$any)']                             = 'cpo/bol/$1';
+$route['cpo/(:$any)']                                 = 'cpo/$1';
 
 $route['comp/add']                                    = 'comp/add';
 $route['comp/edit/(:$any)']                           = 'comp/edit/$1';

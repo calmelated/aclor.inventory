@@ -1,22 +1,20 @@
+
 <div class="container">
     <table cellpadding="0" cellspacing="0" border="0" class="table table-hover table-striped table-bordered table-condensed zebra-strip" id="list_table">
         <thead>
             <tr>
-                <th class="span2">Req. Date</th>
-                <th class="span2">Work Order #</th>
-                <th class="span2">Fin Product #</th>
-                <th class="span2">Raw Material #</th>
-                <th class="span1">Approved<br>(Warehouse)</th>
-                <th class="span1">Approved<br>(Production)</th>
+                <th class="span1">Due Date</th>
+                <th class="span1">Ship Date</th>
+                <th class="span1">Customer</th>
+                <th class="span1">Customer PO</th>
                 <th class="span2">
-                    <?php if ($this->session->userdata['user_auth'] > 0) {  // auth:operator,manager,admin ?>
-                        <a href="outodr/add" class="btn btn-primary btn-mini">New</a>
-                    <?php } ?>
+                    <a href="cpo/add" class="btn btn-primary btn-mini">New</a>
                 </th>
             </tr>
         </thead>
+
     </table>
-</div> <!-- /container -->
+</div>
 
 <script>
 /* Table initialisation */
@@ -26,10 +24,10 @@ $(document).ready(function() {
         "sPaginationType": "bootstrap",
         "bProcessing": true,
         "bServerSide": true,
-        "aaSorting": [[6, "desc"]],
+        "aaSorting": [[4, "desc"]],
         "iDisplayLength": 10,
         "aLengthMenu": [[10, 25, 50, 100, Math.pow(2,64)], [10, 25, 50, 100, 'All']],
-        "sAjaxSource": 'outodr/datatable',
+        "sAjaxSource": 'cpo/datatable',
         "oLanguage": {
             "sLengthMenu": "_MENU_ records per page"
         },

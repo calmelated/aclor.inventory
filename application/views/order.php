@@ -1,5 +1,5 @@
 <div class="container">
-    <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="list_table">
+    <table cellpadding="0" cellspacing="0" border="0" class="table table-hover table-striped table-bordered table-condensed zebra-strip" id="list_table">
         <thead>
             <tr>
                 <th>Item #</th>

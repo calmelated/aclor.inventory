@@ -1,5 +1,5 @@
 <div class="container">
-    <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="list_table">
+    <table cellpadding="0" cellspacing="0" border="0" class="table table-hover table-striped table-bordered table-condensed zebra-strip" id="list_table">
         <thead>
             <tr>
                 <th class="span2">Adjust Date</th>
@@ -9,7 +9,11 @@
                 <th class="span1">Unit</th>
                 <th class="span1">Qty1</th>
                 <th class="span1">Unit1</th>
-                <th class="span3"></th>
+                <th class="span2">
+                    <?php if ($this->session->userdata['user_auth'] > 0) {  // auth:operator,manager,admin ?>
+                        <a href="adjodr/add" class="btn btn-primary btn-mini">New</a>
+                    <?php } ?>
+                </th>
             </tr>
         </thead>
     </table>

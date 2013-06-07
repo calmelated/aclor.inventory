@@ -544,10 +544,33 @@ class Order_model extends CI_Model {
     }
 
     public function getunit($item_num) {
-        $rsts = $this->db->query("select `unit`,`unit1` from `" . ITEMS . "` where `name` = '" . $item_num . "'")->result_array();
+        $data['unit'] = $data['unit1'] = "";
+        $rsts = $this->db->query("select `unit`,`unit1` from `" . ITEMS . "` where `name` = '" . $this->util_model->str_escape(urldecode($item_num)) . "'")->result_array();
         foreach($rsts as $rst) {
             $data['unit']  = $rst['unit'];
             $data['unit1'] = $rst['unit1'];
+            break;
+        }
+        return $data;
+    }
+
+    public function getdesc($item_num) {
+        $data['desc'] = "";
+        $rsts = $this->db->query("select `desc` from `" . ITEMS . "` where `name` = '" . $this->util_model->str_escape(urldecode($item_num)) . "'")->result_array();
+        foreach($rsts as $rst) {
+            $data['desc']  = $rst['desc'];
+            break;
+        }
+        return $data;
+    }
+
+    public function get_comp_info($comp) {
+        $data['tel'] = $data['address'] = $data['city'] = "";
+        $rsts = $this->db->query("select `tel`,`address`,`city` from `" . COMPANIES . "` where `name` = '" . $this->util_model->str_escape(urldecode($comp)) . "'")->result_array();
+        foreach($rsts as $rst) {
+            $data['tel']     = $rst['tel'];
+            $data['address'] = $rst['address'];
+            $data['city']    = $rst['city'];
             break;
         }
         return $data;

@@ -115,6 +115,10 @@ class Item extends CI_Controller {
         echo json_encode($this->order_model->getunit($item_num));
     }
 
+    public function getdesc($item_num) {
+        echo json_encode($this->order_model->getdesc($item_num));
+    }
+
     //function to handle callbacks
     public function datatable() {
         $this->datatables->select('name,unit,unit1,id')->from(ITEMS);

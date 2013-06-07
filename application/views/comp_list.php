@@ -1,5 +1,5 @@
 <div class="container">
-    <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="list_table">
+    <table cellpadding="0" cellspacing="0" border="0" class="table table-hover table-striped table-bordered table-condensed zebra-striped" id="list_table">
         <thead>
             <tr>
                 <th class="span1">Company</th>
@@ -7,8 +7,8 @@
                 <th class="span1">Tel</th>
                 <th class="span1">Fax</th>
                 <th class="span1">Email</th>
-                <th class="span2">
-                    <a href="comp/add" class="btn btn-primary">New</a>
+                <th class="span1">
+                    <a href="comp/add" class="btn btn-primary btn-mini">New</a>
                 </th>
             </tr>
         </thead>
